@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="周邊收藏館" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#7c3aed" />
+  <title>周邊收藏庫 MerchVault｜多帳號雲端周邊圖鑑與願望清單平台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', '"Noto Sans TC"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 2.5rem;
+      }
+    }
+    .safe-bottom-nav {
+      padding-bottom: calc(0.375rem + env(safe-area-inset-bottom, 0px));
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .card-hover {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -8px rgba(124, 58, 237, 0.16);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    /* Prevent iOS Safari auto-zoom on form inputs */
+    @media screen and (max-width: 767px) {
+      input[type="text"],
+      input[type="number"],
+      input[type="password"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.22s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 glass-nav border-b border-slate-200/80">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+      <!-- Brand / Title -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 to-pink-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20 shrink-0">
+          <i class="fa-solid fa-gem text-lg"></i>
+        </div>
+        <div class="truncate">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <h1 id="siteTitleDisplay" class="font-bold text-sm sm:text-lg text-slate-900 truncate">星光周邊收藏館</h1>
+            <span id="modeBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-brand-100 text-brand-700 shrink-0">
+              <i class="fa-solid fa-sliders text-[10px]"></i> 後台管理中
+            </span>
+          </div>
+          <p id="siteSubtitleDisplay" class="text-xs text-slate-500 truncate hidden sm:block">個人專屬周邊圖鑑・支援手機相簿上傳、跨設備雲端同步與願望清單</p>
+        </div>
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <!-- Cloud Database Status Pill -->
+        <button id="cloudStatusBtn" type="button" onclick="openCloudModal()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold transition shadow-2xs" title="跨設備雲端資料庫設定與固定網址">
+          <i id="cloudStatusIcon" class="fa-solid fa-cloud text-sky-600"></i>
+          <span id="cloudStatusText" class="hidden lg:inline">雲端同步設定</span>
+        </button>
+
+        <!-- Current Account Pill / Switch User Button -->
+        <button id="accountBtn" type="button" onclick="openAuthModal()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-700 text-xs sm:text-sm font-bold transition" title="切換帳號或註冊新空間">
+          <i class="fa-solid fa-circle-user text-brand-600"></i>
+          <span id="currentUserDisplay" class="max-w-[72px] sm:max-w-[120px] truncate">demo</span>
+          <i class="fa-solid fa-Repeat text-[10px] opacity-60"></i>
+        </button>
+
+        <!-- Quick Upload Button (Admin only) -->
+        <button id="topUploadBtn" type="button" onclick="openUploadModal()" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+          <i class="fa-solid fa-camera"></i>
+          <span>上傳周邊</span>
+        </button>
+
+        <!-- Share / Read-only Export Button -->
+        <button id="sharePublicBtn" type="button" onclick="openShareModal()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium transition" title="分享或匯出公開唯讀版">
+          <i class="fa-solid fa-share-nodes text-brand-600"></i>
+          <span class="hidden md:inline">分享設定</span>
+        </button>
+
+        <!-- Toggle Viewer / Admin Mode -->
+        <button id="toggleModeBtn" type="button" onclick="handleModeToggleClick()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-sm transition">
+          <i id="toggleModeIcon" class="fa-solid fa-eye text-emerald-600"></i>
+          <span id="toggleModeText" class="hidden sm:inline">預覽公開視角</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Public Viewer Notice Banner (Shown when in Public Viewer Mode) -->
+  <div id="publicNoticeBanner" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2.5 text-xs sm:text-sm shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-white/20 font-semibold text-xs">公開展示模式 (唯讀)</span>
+        <span>目前為觀看者視角：可瀏覽館主已擁有的周邊與願望清單，已鎖定所有上傳、編輯與刪除功能。</span>
+      </div>
+      <button id="bannerAdminLoginBtn" type="button" onclick="handleModeToggleClick()" class="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 font-semibold text-xs transition shrink-0">
+        <i class="fa-solid fa-key mr-1"></i>切回後台管理
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-6 space-y-5">
+
+    <!-- Desktop / Tablet Sub-navigation Tabs -->
+    <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2 overflow-x-auto no-scrollbar">
+      <div class="flex items-center gap-1.5">
+        <button type="button" data-tab="gallery" onclick="switchTab('gallery')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-brand-600 text-white shadow-sm transition flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-grip"></i>
+          <span>已擁有周邊</span>
+          <span id="tabCountBadge" class="ml-1 px-1.5 py-0.5 text-[11px] rounded-full bg-white/20 text-white">0</span>
+        </button>
+        <button type="button" data-tab="wishlist" onclick="switchTab('wishlist')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-heart text-rose-500"></i>
+          <span>願望清單</span>
+          <span id="tabWishCountBadge" class="ml-1 px-1.5 py-0.5 text-[11px] rounded-full bg-rose-100 text-rose-600">0</span>
+        </button>
+        <button type="button" data-tab="tags" onclick="switchTab('tags')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-tags"></i>
+          <span>標籤與分類牆</span>
+        </button>
+        <button id="adminTabBtn" type="button" data-tab="admin" onclick="switchTab('admin')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-sliders"></i>
+          <span>帳號與備份管理</span>
+        </button>
+      </div>
+
+      <!-- Layout View Switcher -->
+      <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0">
+        <button type="button" id="viewGridBtn" onclick="setLayoutView('grid')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-800 shadow-sm transition" title="標準卡片檢視">
+          <i class="fa-solid fa-border-all"></i> <span class="hidden sm:inline">卡片</span>
+        </button>
+        <button type="button" id="viewPhotoBtn" onclick="setLayoutView('photo')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition" title="手機相簿牆檢視">
+          <i class="fa-solid fa-images"></i> <span class="hidden sm:inline">相簿牆</span>
+        </button>
+        <button type="button" id="viewListBtn" onclick="setLayoutView('list')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition" title="盤點清單檢視">
+          <i class="fa-solid fa-list-check"></i> <span class="hidden sm:inline">清單</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Stats Bar -->
+    <section id="statsOverviewSection" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div onclick="switchTab('gallery')" class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm flex items-center gap-3 cursor-pointer hover:border-brand-300 transition">
+        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-boxes-stacked text-lg"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium" id="statTotalLabel">已擁有周邊款數</p>
+          <p class="text-base sm:text-xl font-bold text-slate-900" id="statTotalValue">0 款</p>
+        </div>
+      </div>
+
+      <div onclick="filterByOrganizedStatus()" class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm flex items-center gap-3 cursor-pointer hover:border-emerald-300 transition">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-box-Check text-lg"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium">現貨 (已整理 / 未入庫)</p>
+          <p class="text-base sm:text-xl font-bold text-slate-900" id="statInStockSplitValue">0 / 0 款</p>
+        </div>
+      </div>
+
+      <div onclick="switchTab('wishlist')" class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm flex items-center gap-3 cursor-pointer hover:border-rose-300 transition">
+        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-heart text-lg"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium">願望清單目標</p>
+          <p class="text-base sm:text-xl font-bold text-slate-900" id="statWishValue">0 款</p>
+        </div>
+      </div>
+
+      <div id="statValueCard" class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-coins text-lg"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium" id="statExtraLabel">已擁有預估總額</p>
+          <p class="text-base sm:text-xl font-bold text-slate-900" id="statExtraValue">NT$ 0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1 & TAB 2: GALLERY & WISHLIST VIEW -->
+    <section id="tabPanelGallery" class="space-y-4 animate-fade-in">
+      <!-- Wishlist Mode Header Banner (Shown only when on Wishlist tab) -->
+      <div id="wishlistHeaderBanner" class="hidden bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-4 text-white shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl shrink-0">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-sm sm:text-base">願望清單 Wishlist・目標想收周邊</h2>
+            <p class="text-xs text-rose-100">記錄未上市、抽選中或觀望中的目標周邊，入手後可一鍵「達成願望」轉入已擁有圖鑑！</p>
+          </div>
+        </div>
+        <button id="addWishBtnTop" type="button" onclick="openUploadModal('', 'wishlist')" class="px-3.5 py-2 rounded-xl bg-white text-rose-600 hover:bg-rose-50 text-xs sm:text-sm font-bold shadow-xs transition shrink-0">
+          <i class="fa-solid fa-plus mr-1"></i>新增願望目標
+        </button>
+      </div>
+
+      <!-- Search & Multi-Filter Control Card -->
+      <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+          <!-- Search Input -->
+          <div class="md:col-span-5 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input id="searchInput" type="text" oninput="applyFilters()" placeholder="搜尋周邊名稱、角色、IP、#標籤或收納位置..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
+            <button id="clearSearchBtn" type="button" onclick="clearSearchInput()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Category Filter (23 Specific Types) -->
+          <div class="md:col-span-2">
+            <select id="filterCategory" onchange="applyFilters()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="all">所有品項類型</option>
+              <option value="壓克力立牌">壓克力立牌</option>
+              <option value="57mm徽章">57mm徽章</option>
+              <option value="75mm徽章">75mm徽章</option>
+              <option value="其他大小徽章">其他大小徽章</option>
+              <option value="TCG卡牌">TCG卡牌</option>
+              <option value="抽卡機小卡">抽卡機小卡</option>
+              <option value="收藏卡">收藏卡</option>
+              <option value="拍立得">拍立得</option>
+              <option value="明信片">明信片</option>
+              <option value="貼紙">貼紙</option>
+              <option value="卡套">卡套</option>
+              <option value="公仔">公仔</option>
+              <option value="盒玩">盒玩</option>
+              <option value="娃娃">娃娃</option>
+              <option value="吊飾">吊飾</option>
+              <option value="扭蛋">扭蛋</option>
+              <option value="色紙">色紙</option>
+              <option value="資料夾">資料夾</option>
+              <option value="海報">海報</option>
+              <option value="漫畫">漫畫</option>
+              <option value="漫畫(首刷)">漫畫(首刷)</option>
+              <option value="雜誌">雜誌</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+
+          <!-- Series / IP Filter -->
+          <div class="md:col-span-2">
+            <select id="filterSeries" onchange="applyFilters()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="all">所有作品 / IP</option>
+            </select>
+          </div>
+
+          <!-- Segregated Inventory Status & Sort Filter -->
+          <div class="md:col-span-3 flex gap-2">
+            <select id="filterStatus" onchange="applyFilters()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="all">全部庫存狀態</option>
+            </select>
+
+            <select id="sortOrder" onchange="applyFilters()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500" title="排序方式">
+              <option value="newest">最新加入</option>
+              <option value="qty_desc">數量最多</option>
+              <option value="price_desc">價格由高到低</option>
+              <option value="name_asc">名稱排序</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Tag Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
+          <span class="text-xs font-semibold text-slate-400 shrink-0 mr-1"><i class="fa-solid fa-hashtag mr-0.5"></i>熱門標籤：</span>
+          <div id="quickTagPills" class="flex items-center gap-1.5"></div>
+        </div>
+      </div>
+
+      <!-- Gallery Items Container -->
+      <div id="galleryContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+
+      <!-- Empty State -->
+      <div id="emptyStateBox" class="hidden bg-white rounded-2xl p-10 text-center border border-dashed border-slate-300 space-y-3">
+        <div class="w-14 h-14 rounded-2xl bg-brand-50 text-brand-500 flex items-center justify-center mx-auto text-2xl">
+          <i id="emptyStateIcon" class="fa-solid fa-box-open"></i>
+        </div>
+        <h3 id="emptyStateTitle" class="text-base font-bold text-slate-800">目前還沒有收錄任何周邊</h3>
+        <p id="emptyStateDesc" class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">點擊下方按鈕即可直接從手機相簿選取照片（或開啟相機拍照）上傳您的第一件周邊收藏！</p>
+        <div class="flex flex-wrap justify-center gap-2 pt-2">
+          <button type="button" onclick="resetAllFilters()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition">
+            重設所有篩選
+          </button>
+          <button id="emptyStateUploadBtn" type="button" onclick="openUploadModal()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition">
+            <i class="fa-solid fa-camera mr-1"></i>從手機相簿 / 相機新增周邊
+          </button>
+          <button id="emptyStateWishBtn" type="button" onclick="openUploadModal('', 'wishlist')" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm font-semibold transition">
+            <i class="fa-solid fa-heart mr-1"></i>新增願望目標
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TAGS & SERIES CLOUD VIEW -->
+    <section id="tabPanelTags" class="hidden space-y-4 animate-fade-in">
+      <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">標籤與作品分類總覽</h2>
+            <p class="text-xs sm:text-sm text-slate-500">點擊任一標籤、品項類型、角色或作品名稱，即可快速篩選出對應的所有周邊</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">依作品 / IP 分類</h3>
+            <div id="seriesCloudList" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">依品項類型統計</h3>
+            <div id="categoryCloudList" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">依角色 / 推角分類</h3>
+            <div id="characterCloudList" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">所有自訂標籤 (#Tags)</h3>
+            <div id="allTagsCloudList" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div id="storageLocationSection" class="border-t border-slate-100 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">收納位置盤點 (僅後台可見)</h3>
+            <div id="locationCloudList" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ADMIN BACKEND & MULTI-USER SETTINGS VIEW -->
+    <section id="tabPanelAdmin" class="hidden space-y-4 animate-fade-in">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Site Settings & Account Info -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <h2 class="text-sm sm:text-base font-bold text-slate-900">個人帳號與收藏館設定</h2>
+              <p class="text-xs text-slate-500">目前登入帳號：<strong id="adminPanelCurrentAccount" class="text-brand-600">demo</strong></p>
+            </div>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <label for="settingSiteTitle" class="block text-xs font-semibold text-slate-600 mb-1">您的收藏館標題名稱</label>
+              <input id="settingSiteTitle" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="例如：小葵的周邊收藏館" />
+            </div>
+            <div>
+              <label for="settingSiteSubtitle" class="block text-xs font-semibold text-slate-600 mb-1">副標題 / 館主簡介</label>
+              <input id="settingSiteSubtitle" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="例如：自留展示與願望清單・歡迎同好交流" />
+            </div>
+            <div>
+              <label for="settingAdminPin" class="block text-xs font-semibold text-slate-600 mb-1">修改此帳號登入密碼 (從唯讀模式切回後台亦使用此密碼)</label>
+              <input id="settingAdminPin" type="password" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-mono" placeholder="輸入新密碼" />
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <div>
+                <p class="text-xs font-semibold text-slate-700">公開模式顯示入手價格與預算</p>
+                <p class="text-[11px] text-slate-400">關閉時，觀看者無法看到單價與總額</p>
+              </div>
+              <input id="settingShowPricePublic" type="checkbox" class="w-4 h-4 accent-brand-600 rounded cursor-pointer" />
+            </div>
+            <button type="button" onclick="saveSiteSettings()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+              <i class="fa-solid fa-floppy-disk mr-1"></i>儲存館藏設定與密碼並同步雲端
+            </button>
+          </div>
+        </div>
+
+        <!-- Multi-User Platform & Cloud Sync Management -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <div>
+              <h2 class="text-sm sm:text-base font-bold text-slate-900">跨設備雲端資料庫與手機上傳</h2>
+              <p class="text-xs text-slate-500">固定網址共用雲端資料庫・手機電腦即時同步</p>
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <button type="button" onclick="openCloudModal()" class="w-full py-2.5 px-3.5 rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 text-xs sm:text-sm font-semibold flex items-center justify-between transition">
+              <span><i class="fa-solid fa-link mr-2"></i>取得「跨設備固定雲端網址」</span>
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+
+            <button type="button" onclick="openAuthModal()" class="w-full py-2.5 px-3.5 rounded-xl border border-brand-200 bg-brand-50/60 hover:bg-brand-100/70 text-brand-700 text-xs sm:text-sm font-semibold flex items-center justify-between transition">
+              <span><i class="fa-solid fa-right-left mr-2"></i>切換帳號 / 註冊新帳號</span>
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+
+            <button type="button" onclick="openUploadModal('', 'owned')" class="w-full py-2.5 px-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold flex items-center justify-between transition">
+              <span><i class="fa-solid fa-mobile-screen-button text-brand-600 mr-2"></i>從手機相簿 / 相機批次新增周邊</span>
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+
+            <button type="button" onclick="openUploadModal('', 'wishlist')" class="w-full py-2.5 px-3.5 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/60 text-rose-700 text-xs sm:text-sm font-semibold flex items-center justify-between transition">
+              <span><i class="fa-solid fa-heart mr-2"></i>新增目標周邊至「願望清單」</span>
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-600 space-y-1">
+            <p class="font-semibold text-slate-800"><i class="fa-solid fa-mobile-screen text-brand-500 mr-1"></i>手機觀看與拍照上傳說明</p>
+            <p>在手機打開專屬雲端網址後，點擊底部中央的「<strong>照片上傳</strong>」即可直接從手機相簿選取多張照片或開啟手機相機拍照，上傳後自動同步至雲端資料庫。</p>
+          </div>
+        </div>
+
+        <!-- Backup / Export Read-Only Website -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+              <i class="fa-solid fa-cloud-arrow-down"></i>
+            </div>
+            <div>
+              <h2 class="text-sm sm:text-base font-bold text-slate-900">資料備份與公開唯讀匯出</h2>
+              <p class="text-xs text-slate-500">將目前帳號的圖鑑與願望清單匯出分享或備份</p>
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <button type="button" onclick="exportReadOnlyHtml()" class="w-full py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-file-shield"></i>
+              <span>匯出「純唯讀公開展示網頁 (.html)」</span>
+            </button>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              ↑ 產生的獨立網頁包含您目前已擁有的周邊與願望清單，並<strong>永久移除後台編輯上傳功能與收納位置</strong>，傳給別人展示絕對安全不可竄改！
+            </p>
+
+            <hr class="border-slate-100 my-2" />
+
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="exportBackupJson()" class="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                <i class="fa-solid fa-download text-brand-600"></i>
+                <span>匯出帳號備份 (.json)</span>
+              </button>
+
+              <label class="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition">
+                <i class="fa-solid fa-upload text-brand-600"></i>
+                <span>匯入備份檔</span>
+                <input id="importJsonInput" type="file" accept=".json,application/json" onchange="handleImportJson(event)" class="hidden" />
+              </label>
+            </div>
+
+            <button type="button" onclick="clearCurrentAccountItems()" class="w-full py-2 px-3 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-medium transition">
+              <i class="fa-solid fa-trash-can mr-1"></i>清空此帳號目前所有周邊資料
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Sticky Navigation Bar -->
+  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-30 glass-nav border-t border-slate-200/90 px-1.5 pt-1.5 safe-bottom-nav flex items-center justify-around">
+    <button type="button" onclick="switchTab('gallery')" data-mob-tab="gallery" class="mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-brand-600 font-semibold text-[11px]">
+      <i class="fa-solid fa-grip text-base mb-0.5"></i>
+      <span>已擁有</span>
+    </button>
+
+    <button type="button" onclick="switchTab('wishlist')" data-mob-tab="wishlist" class="mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-500 font-medium text-[11px]">
+      <i class="fa-solid fa-heart text-base mb-0.5"></i>
+      <span>願望單</span>
+    </button>
+
+    <!-- Center Prominent Mobile Camera / Photo Upload Button (Admin Only) -->
+    <button id="mobileCenterUploadBtn" type="button" onclick="openUploadModal()" class="flex items-center justify-center gap-1 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-brand-600 to-pink-500 text-white font-bold text-xs shadow-md shadow-brand-500/30 active:scale-95 transition">
+      <i class="fa-solid fa-camera text-sm"></i>
+      <span>照片上傳</span>
+    </button>
+
+    <button type="button" onclick="switchTab('tags')" data-mob-tab="tags" class="mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-500 font-medium text-[11px]">
+      <i class="fa-solid fa-tags text-base mb-0.5"></i>
+      <span>分類牆</span>
+    </button>
+
+    <button id="mobileAdminTabBtn" type="button" onclick="switchTab('admin')" data-mob-tab="admin" class="mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-500 font-medium text-[11px]">
+      <i class="fa-solid fa-user-gear text-base mb-0.5"></i>
+      <span>帳號備份</span>
+    </button>
+  </nav>
+
+  <!-- MODAL 1: ADD / EDIT MERCH ITEM (Supports Mobile Photo & Multi-Photo Upload + Segregated Owned vs Wishlist Status) -->
+  <div id="uploadModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+    <div class="bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col overflow-hidden animate-fade-in">
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center">
+            <i class="fa-solid fa-camera-retro"></i>
+          </div>
+          <h3 id="modalFormTitle" class="font-bold text-base sm:text-lg text-slate-900">新增周邊收藏（支援手機相簿/拍照）</h3>
+        </div>
+        <button type="button" onclick="closeUploadModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Form -->
+      <form id="merchForm" onsubmit="handleMerchFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-1">
+        <input type="hidden" id="editItemId" value="" />
+
+        <!-- Group Switcher: Owned Collection vs Wishlist -->
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-xs font-bold text-slate-800 block">選擇歸屬清單（自動切換對應的庫存狀態選項）</span>
+            <span class="text-[11px] text-slate-500">區隔「已擁有周邊」與「願望清單」的專屬狀態</span>
+          </div>
+          <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200">
+            <button type="button" id="groupBtnOwned" onclick="setFormStatusGroup('owned')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white transition">
+              <i class="fa-solid fa-box-open mr-1"></i>已擁有周邊
+            </button>
+            <button type="button" id="groupBtnWishlist" onclick="setFormStatusGroup('wishlist')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+              <i class="fa-solid fa-heart mr-1 text-rose-500"></i>願望清單
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile-Friendly Photo Upload Zone -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2">周邊照片上傳 <span class="text-brand-600 font-normal">（可直接用手機拍照或從手機相簿選取，支援多選批次建檔）</span></label>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+            <!-- Preview Box -->
+            <div class="sm:col-span-5 relative aspect-square rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center overflow-hidden group">
+              <img id="photoPreviewImg" src="" alt="周邊預覽圖" class="hidden w-full h-full object-cover" />
+              <div id="photoPlaceholder" class="text-center p-4 space-y-1.5">
+                <i class="fa-solid fa-image text-3xl text-slate-300"></i>
+                <p class="text-xs font-medium text-slate-500">尚未選擇照片</p>
+                <p class="text-[11px] text-slate-400">支援手機相簿與相機直接上傳</p>
+              </div>
+              <div id="batchPhotoBadge" class="hidden absolute top-2 left-2 px-2.5 py-1 rounded-full bg-brand-600 text-white text-xs font-bold shadow">
+                已選 <span id="batchPhotoCount">1</span> 張照片
+              </div>
+            </div>
+
+            <!-- Action Buttons for Phone Gallery & Camera -->
+            <div class="sm:col-span-7 space-y-2.5">
+              <!-- Select from Phone Photo Library (supports multiple) -->
+              <label class="w-full py-3 px-4 rounded-2xl bg-brand-50 hover:bg-brand-100 active:bg-brand-200 border border-brand-200 text-brand-700 font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer transition shadow-2xs">
+                <i class="fa-solid fa-images text-base"></i>
+                <span>從手機相簿 / 電腦選取照片 (可多選)</span>
+                <input id="galleryFileInput" type="file" accept="image/*" multiple onchange="handlePhotoFilesSelected(event)" class="hidden" />
+              </label>
+
+              <!-- Direct Mobile Camera Capture -->
+              <label class="w-full py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-200 text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer transition">
+                <i class="fa-solid fa-camera text-base text-pink-600"></i>
+                <span>直接開啟手機相機拍照上傳</span>
+                <input id="cameraFileInput" type="file" accept="image/*" capture="environment" onchange="handlePhotoFilesSelected(event)" class="hidden" />
+              </label>
+
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                💡 手機點選「從手機相簿選取」可直接從手機圖庫勾選單張或多張周邊照片；系統會自動壓縮最佳化並同步至雲端資料庫。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basic Fields -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="itemNameInput" class="block text-xs font-bold text-slate-700 mb-1">周邊名稱 *</label>
+            <input id="itemNameInput" type="text" required placeholder="例如：2026 生日限定閃底徽章" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div>
+            <label for="itemSeriesInput" class="block text-xs font-bold text-slate-700 mb-1">作品 / IP 名稱</label>
+            <input id="itemSeriesInput" type="text" list="existingSeriesDatalist" placeholder="例如：排球少年 / 吉伊卡哇" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <datalist id="existingSeriesDatalist"></datalist>
+          </div>
+        </div>
+
+        <!-- Category (23 Specific Types) & Segregated Inventory Status -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="itemCharacterInput" class="block text-xs font-bold text-slate-700 mb-1">角色 / 推角</label>
+            <input id="itemCharacterInput" type="text" placeholder="例如：星野露比 / 小八貓" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div>
+            <label for="itemCategoryInput" class="block text-xs font-bold text-slate-700 mb-1">品項類型</label>
+            <select id="itemCategoryInput" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="壓克力立牌">壓克力立牌</option>
+              <option value="57mm徽章">57mm徽章</option>
+              <option value="75mm徽章">75mm徽章</option>
+              <option value="其他大小徽章">其他大小徽章</option>
+              <option value="TCG卡牌">TCG卡牌</option>
+              <option value="抽卡機小卡">抽卡機小卡</option>
+              <option value="收藏卡">收藏卡</option>
+              <option value="拍立得">拍立得</option>
+              <option value="明信片">明信片</option>
+              <option value="貼紙">貼紙</option>
+              <option value="卡套">卡套</option>
+              <option value="公仔">公仔</option>
+              <option value="盒玩">盒玩</option>
+              <option value="娃娃">娃娃</option>
+              <option value="吊飾">吊飾</option>
+              <option value="扭蛋">扭蛋</option>
+              <option value="色紙">色紙</option>
+              <option value="資料夾">資料夾</option>
+              <option value="海報">海報</option>
+              <option value="漫畫">漫畫</option>
+              <option value="漫畫(首刷)">漫畫(首刷)</option>
+              <option value="雜誌">雜誌</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div>
+            <label for="itemStatusInput" id="itemStatusLabel" class="block text-xs font-bold text-slate-700 mb-1">庫存狀態 (已擁有)</label>
+            <select id="itemStatusInput" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </select>
+          </div>
+        </div>
+
+        <!-- Custom Tags Input -->
+        <div>
+          <label for="itemTagsInput" class="block text-xs font-bold text-slate-700 mb-1">標籤內容 (#Tags，以空白或逗號分隔，或點擊下方常用標籤)</label>
+          <input id="itemTagsInput" type="text" placeholder="例如：限定特典, 閃底, 全新未拆, 痛包組裝" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <div class="flex flex-wrap items-center gap-1.5 mt-2">
+            <span class="text-[11px] text-slate-400">快速加標籤：</span>
+            <button type="button" onclick="appendQuickTag('初回限定')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+初回限定</button>
+            <button type="button" onclick="appendQuickTag('全新未拆')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+全新未拆</button>
+            <button type="button" onclick="appendQuickTag('複數收藏')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+複數收藏</button>
+            <button type="button" onclick="appendQuickTag('日版空運')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+日版空運</button>
+            <button type="button" onclick="appendQuickTag('痛包用')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+痛包用</button>
+            <button type="button" onclick="appendQuickTag('首刷特典')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs text-slate-600 transition">+首刷特典</button>
+          </div>
+        </div>
+
+        <!-- Inventory Details (Quantity, Price, Storage Location) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="itemQtyInput" class="block text-xs font-bold text-slate-700 mb-1">數量 (持有 / 目標數)</label>
+            <input id="itemQtyInput" type="number" min="1" max="999" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div>
+            <label for="itemPriceInput" class="block text-xs font-bold text-slate-700 mb-1">單價 / 目標預算 (NT$)</label>
+            <input id="itemPriceInput" type="number" min="0" step="1" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <label for="itemLocationInput" class="block text-xs font-bold text-slate-700 mb-1">收納位置 / 預計購買管道</label>
+            <input id="itemLocationInput" type="text" placeholder="例如：展示櫃第2層 / 安利美特" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+        </div>
+
+        <div>
+          <label for="itemNoteInput" class="block text-xs font-bold text-slate-700 mb-1">備註說明 / 入手與許願紀錄</label>
+          <textarea id="itemNoteInput" rows="2" placeholder="可記錄購入店家、特典細節、交換條件或發售月份..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeUploadModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition">
+            取消
+          </button>
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-brand-500/20 transition">
+            <i class="fa-solid fa-check mr-1"></i>儲存周邊資料
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ITEM DETAIL LIGHTBOX -->
+  <div id="detailModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden grid grid-cols-1 md:grid-cols-12 max-h-[90vh] animate-fade-in">
+      <!-- Image Column -->
+      <div class="md:col-span-6 bg-slate-950 flex items-center justify-center relative min-h-[260px] max-h-[420px] md:max-h-none">
+        <img id="detailModalImg" src="" alt="周邊大圖" class="w-full h-full object-contain max-h-[420px] md:max-h-[540px]" />
+        <button type="button" onclick="closeDetailModal()" class="md:hidden absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Info Column -->
+      <div class="md:col-span-6 p-5 sm:p-6 flex flex-col justify-between overflow-y-auto space-y-4">
+        <div class="space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span id="detailStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700"></span>
+            </div>
+            <button type="button" onclick="closeDetailModal()" class="hidden md:flex w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 items-center justify-center shrink-0">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div>
+            <p id="detailSeriesText" class="text-xs font-bold text-brand-600 uppercase tracking-wide"></p>
+            <h3 id="detailTitleText" class="text-lg sm:text-xl font-bold text-slate-900 mt-0.5"></h3>
+          </div>
+
+          <div id="detailTagsList" class="flex flex-wrap gap-1.5 pt-1"></div>
+
+          <div class="grid grid-cols-2 gap-2.5 pt-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block">角色 / 推角</span>
+              <span id="detailCharacterText" class="font-bold text-slate-800 text-sm"></span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block">品項類型</span>
+              <span id="detailCategoryText" class="font-bold text-slate-800 text-sm"></span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block">數量</span>
+              <span id="detailQtyText" class="font-bold text-slate-800 text-sm"></span>
+            </div>
+            <div id="detailPriceBox" class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block">單價 / 預算</span>
+              <span id="detailPriceText" class="font-bold text-slate-800 text-sm"></span>
+            </div>
+          </div>
+
+          <div id="detailLocationBox" class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/70 text-xs">
+            <span class="font-bold text-amber-800"><i class="fa-solid fa-location-dot mr-1"></i>收納位置 / 管道（僅後台可見）：</span>
+            <span id="detailLocationText" class="text-amber-900"></span>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
+            <span class="font-bold text-slate-600 block">備註紀錄</span>
+            <p id="detailNoteText" class="text-slate-600 leading-relaxed whitespace-pre-line"></p>
+          </div>
+        </div>
+
+        <!-- Admin Actions in Detail Modal (Hidden in Public Viewer Mode) -->
+        <div id="detailAdminActions" class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+          <button id="detailQuickStatusBtn" type="button" class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 transition">
+            狀態快速切換
+          </button>
+          <div class="flex items-center gap-2">
+            <button id="detailEditBtn" type="button" class="px-3.5 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold transition">
+              <i class="fa-solid fa-pen-to-square mr-1"></i>編輯內容
+            </button>
+            <button id="detailDeleteBtn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition">
+              <i class="fa-solid fa-trash-can mr-1"></i>刪除
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: PASSWORD UNLOCK MODAL -->
+  <div id="pinModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center mx-auto text-xl mb-2">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">輸入帳號密碼返回後台</h3>
+        <p class="text-xs text-slate-500">請輸入帳號 <strong id="pinModalAccountName" class="text-brand-600"></strong> 的管理密碼</p>
+      </div>
+      <form onsubmit="handlePinSubmit(event)" class="space-y-3">
+        <input id="pinCheckInput" type="password" placeholder="請輸入帳號密碼" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-center text-base tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        <p id="pinErrorMsg" class="hidden text-xs text-rose-600 text-center font-semibold">密碼不正確，請重新輸入</p>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="button" onclick="closePinModal()" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">取消</button>
+          <button type="submit" class="py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold">解鎖進入後台</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: SHARE & PUBLIC READ-ONLY EXPORT MODAL -->
+  <div id="shareModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900"><i class="fa-solid fa-share-nodes text-brand-600 mr-1.5"></i>公開展示與唯讀分享</h3>
+        <button type="button" onclick="closeShareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-600">
+        <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 space-y-2">
+          <p class="font-bold text-sky-900 text-sm"><i class="fa-solid fa-cloud mr-1"></i>方式一：複製「跨設備固定雲端網址」</p>
+          <p class="text-sky-800 leading-relaxed">
+            只要使用這個固定網址，無論在手機、平板或電腦打開，都會連接到同一個雲端資料庫，可直接登入您的帳號管理周邊！
+          </p>
+          <button type="button" onclick="copyShareableCloudUrl()" class="w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold shadow-xs transition">
+            <i class="fa-solid fa-link mr-1"></i>複製固定雲端資料庫網址
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+          <p class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-shield mr-1"></i>方式二：匯出「純唯讀公開展示網頁 (.html)」</p>
+          <p class="text-emerald-800 leading-relaxed">
+            系統會將您目前的周邊與願望清單打包，並移除所有後台管理、上傳與編輯程式碼，產生一個獨立的唯讀網頁檔，傳給朋友展示絕對不會被修改。
+          </p>
+          <button type="button" onclick="exportReadOnlyHtml()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs transition">
+            <i class="fa-solid fa-download mr-1"></i>立即下載唯讀展示網頁 (.html)
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <p class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-clipboard-list mr-1 text-brand-600"></i>方式三：複製收藏與願望清單文字摘要</p>
+          <p class="text-slate-500">一鍵將目前的周邊與願望清單整理成文字，方便貼到社群 (Plurk / Threads / IG / Line) 分享或交換。</p>
+          <button type="button" onclick="copyPublicSummaryText()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition">
+            <i class="fa-solid fa-copy mr-1"></i>複製周邊與願望清單文字
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: MULTI-USER LOGIN / REGISTER MODAL -->
+  <div id="authModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-5 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-600 to-pink-500 text-white flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-user-astronaut text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">個人專屬帳號登入 / 註冊</h3>
+            <p class="text-xs text-slate-500">雲端同步資料庫・不同設備輸入同帳號即可同步</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAuthModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Mode Tabs: Login vs Register -->
+      <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-2xl">
+        <button type="button" id="authTabLoginBtn" onclick="setAuthModalMode('login')" class="py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-2xs transition">
+          登入現有帳號
+        </button>
+        <button type="button" id="authTabRegisterBtn" onclick="setAuthModalMode('register')" class="py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
+          註冊新帳號 (空白庫)
+        </button>
+      </div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+        <div>
+          <label for="authUsernameInput" class="block text-xs font-bold text-slate-700 mb-1">帳號名稱 (Username) *</label>
+          <input id="authUsernameInput" type="text" required placeholder="請輸入您的專屬帳號名稱" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+
+        <div>
+          <label for="authPasswordInput" class="block text-xs font-bold text-slate-700 mb-1">帳號密碼 (Password) *</label>
+          <input id="authPasswordInput" type="password" required placeholder="請輸入密碼" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+
+        <div id="authRegisterExtraFields" class="hidden space-y-3 pt-1">
+          <div>
+            <label for="authSiteTitleInput" class="block text-xs font-bold text-slate-700 mb-1">為您的收藏館取個名字 (選填)</label>
+            <input id="authSiteTitleInput" type="text" placeholder="例如：阿真的排球少年與吉伊卡哇周邊館" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <p class="text-[11px] text-slate-500 bg-brand-50/70 border border-brand-100 rounded-xl p-2.5">
+            ✨ 註冊後將為您建立<strong>完全空白的個人資料庫</strong>並自動同步至雲端，不同設備打開同網址即可登入同一個帳號。
+          </p>
+        </div>
+
+        <p id="authErrorMsg" class="hidden text-xs text-rose-600 font-semibold text-center"></p>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/20 transition">
+          登入並載入雲端個人數據
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: CLOUD DATABASE SYNC & FIXED URL CONFIGURATION MODAL -->
+  <div id="cloudModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-cloud-bolt"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">跨設備固定雲端資料庫設定</h3>
+            <p class="text-xs text-slate-500">解決不同手機、平板、電腦無法登入同帳號的問題</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCloudModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Auto Cloud URL Box -->
+      <div class="p-4 rounded-2xl bg-sky-50 border border-sky-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-sky-900"><i class="fa-solid fa-link mr-1"></i>您的專屬「固定雲端資料庫網址」</span>
+          <span id="cloudModalBadge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">雲端已連線</span>
+        </div>
+        <p class="text-xs text-sky-800 leading-relaxed">
+          系統已為您綁定專屬的雲端資料庫 ID！<strong>只要把下方這個帶有雲端參數的網址存成書籤或傳到其他手機／電腦</strong>，打開後都會固定讀取同一個雲端資料庫，所有註冊的帳號與周邊資料皆可跨設備即時同步：
+        </p>
+        <div class="flex gap-2">
+          <input id="shareableCloudUrlInput" type="text" readonly class="w-full px-3 py-2 rounded-xl border border-sky-200 bg-white text-xs font-mono text-slate-700" />
+          <button type="button" onclick="copyShareableCloudUrl()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shrink-0 transition">
+            複製網址
+          </button>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-[11px] text-sky-700">雲端資料庫代碼：<code id="currentCloudIdLabel" class="font-mono font-bold">自動配置中</code></span>
+          <button type="button" onclick="forceCloudSyncNow()" class="px-3 py-1 rounded-lg bg-white hover:bg-sky-100 border border-sky-200 text-sky-700 text-xs font-semibold transition">
+            <i class="fa-solid fa-arrows-rotate mr-1"></i>立即手動同步雲端
+          </button>
+        </div>
+      </div>
+
+      <!-- Manual Cloud ID or Custom Firebase DB URL -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
+        <p class="font-bold text-slate-800"><i class="fa-solid fa-database text-brand-600 mr-1"></i>進階：切換雲端資料庫代碼 或 綁定自訂 Firebase 網址</p>
+        <div class="space-y-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">輸入既有的雲端資料庫代碼 (Cloud ID) 與其他設備共用：</label>
+            <div class="flex gap-2">
+              <input id="customCloudIdInput" type="text" placeholder="輸入雲端代碼 (例如 134265...)" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono" />
+              <button type="button" onclick="applyCustomCloudId()" class="px-3 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shrink-0">
+                套用代碼
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-1 border-t border-slate-200/70">
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">或綁定您自己的 Google Firebase Realtime Database 網址 (選填，容量更大)：</label>
+            <div class="flex gap-2">
+              <input id="customFirebaseUrlInput" type="text" placeholder="https://your-project-default-rtdb.firebaseio.com" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono" />
+              <button type="button" onclick="applyCustomFirebaseUrl()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold shrink-0">
+                綁定網址
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="hidden fixed top-20 right-4 z-50 max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-medium animate-fade-in">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+    <span id="toastMessage">操作成功</span>
+  </div>
+
+  <script>
+    // ============================================================================
+    // 🌐 固定雲端資料庫預設值 (若您部署到 Netlify / GitHub Pages，可將取得的 Cloud ID 填入下方引號內，
+    // 這樣就算網址後面不加 ?cloud=xxx，全世界打開網址也都會連到同一個固定資料庫！)
+    // ============================================================================
+    const FIXED_CLOUD_ID = '';         // 例如填入 '1357924680' 即可永久鎖定同一座雲端資料庫
+    const FIXED_FIREBASE_URL = '';     // 或填入您的 Firebase Realtime DB 網址
+
+    // --- 23 Specific Item Categories Requested by User ---
+    const ITEM_CATEGORIES = [
+      '壓克力立牌',
+      '57mm徽章',
+      '75mm徽章',
+      '其他大小徽章',
+      'TCG卡牌',
+      '抽卡機小卡',
+      '收藏卡',
+      '拍立得',
+      '明信片',
+      '貼紙',
+      '卡套',
+      '公仔',
+      '盒玩',
+      '娃娃',
+      '吊飾',
+      '扭蛋',
+      '色紙',
+      '資料夾',
+      '海報',
+      '漫畫',
+      '漫畫(首刷)',
+      '雜誌',
+      '其他'
+    ];
+
+    // --- Segregated Status Options: Owned vs Wishlist ---
+    const OWNED_STATUS_OPTIONS = [
+      { value: 'organized', label: '✨ 現貨 (已整理位置)' },
+      { value: 'unorganized', label: '📥 現貨 (未入庫)' },
+      { value: 'preorder', label: '📦 預購等待中' },
+      { value: 'trade', label: '🔄 可交換' },
+      { value: 'forsale', label: '🏷️ 待售' }
+    ];
+
+    const WISHLIST_STATUS_OPTIONS = [
+      { value: 'wish_unreleased', label: '🗓️ 未上市' },
+      { value: 'wish_lottery', label: '🎟️ 抽選中' },
+      { value: 'wish_watching', label: '👀 觀望中' }
+    ];
+
+    const WISHLIST_STATUS_CODES = WISHLIST_STATUS_OPTIONS.map(o => o.value);
+
+    // --- Multi-User + Cloud Sync State ---
+    let currentUser = 'demo';
+    let usersRegistry = {}; // { [username]: { password, createdAt } }
+    let allUsersData = { usersRegistry: {}, userData: {} }; // Unified cloud & local payload
+    let merchItems = [];
+    let isAdminMode = true;
+    let currentTab = 'gallery'; // 'gallery' | 'wishlist' | 'tags' | 'admin'
+    let currentLayout = 'grid'; // 'grid' | 'photo' | 'list'
+    let activeQuickTag = '';
+    let pendingUploadImages = [];
+    let authModalMode = 'login';
+    let currentFormGroup = 'owned'; // 'owned' | 'wishlist'
+
+    // Cloud Sync Configuration
+    let cloudSyncId = '';
+    let customFirebaseUrl = '';
+    let isCloudConnected = false;
+
+    let siteSettings = {
+      title: '星光周邊收藏館',
+      subtitle: '個人專屬周邊圖鑑・支援手機相簿上傳與願望清單管理',
+      adminPin: '1234',
+      showPricePublic: false
+    };
+
+    function isWishlistStatus(status) {
+      return WISHLIST_STATUS_CODES.includes(status) || status === 'wishlist';
+    }
+
+    function normalizeLegacyStatus(status) {
+      if (status === 'owned' || status === 'grail') return 'organized';
+      if (status === 'wishlist') return 'wish_watching';
+      const validOwned = OWNED_STATUS_OPTIONS.some(o => o.value === status);
+      const validWish = WISHLIST_STATUS_OPTIONS.some(o => o.value === status);
+      if (validOwned || validWish) return status;
+      return 'organized';
+    }
+
+    // --- Populate Status Select Dropdowns Dynamically ---
+    function setFormStatusGroup(group, selectedStatus = '') {
+      currentFormGroup = group === 'wishlist' ? 'wishlist' : 'owned';
+      const btnOwned = document.getElementById('groupBtnOwned');
+      const btnWish = document.getElementById('groupBtnWishlist');
+      const statusSelect = document.getElementById('itemStatusInput');
+      const statusLabel = document.getElementById('itemStatusLabel');
+
+      if (currentFormGroup === 'owned') {
+        btnOwned.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white transition';
+        btnWish.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition';
+        statusLabel.textContent = '庫存狀態 (已擁有周邊)';
+        statusSelect.innerHTML = OWNED_STATUS_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+        if (selectedStatus && OWNED_STATUS_OPTIONS.some(o => o.value === selectedStatus)) {
+          statusSelect.value = selectedStatus;
+        } else {
+          statusSelect.value = 'organized';
+        }
+      } else {
+        btnWish.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500 text-white transition';
+        btnOwned.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition';
+        statusLabel.textContent = '願望狀態 (願望清單)';
+        statusSelect.innerHTML = WISHLIST_STATUS_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+        if (selectedStatus && WISHLIST_STATUS_OPTIONS.some(o => o.value === selectedStatus)) {
+          statusSelect.value = selectedStatus;
+        } else {
+          statusSelect.value = 'wish_watching';
+        }
+      }
+    }
+
+    function updateFilterStatusDropdownForTab() {
+      const filterSelect = document.getElementById('filterStatus');
+      const prevValue = filterSelect.value;
+
+      if (currentTab === 'wishlist') {
+        filterSelect.innerHTML = `
+          <option value="all">全部願望狀態</option>
+          ${WISHLIST_STATUS_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+        `;
+        if (!WISHLIST_STATUS_OPTIONS.some(o => o.value === prevValue)) {
+          filterSelect.value = 'all';
+        } else {
+          filterSelect.value = prevValue;
+        }
+      } else {
+        filterSelect.innerHTML = `
+          <option value="all">全部已擁有狀態</option>
+          ${OWNED_STATUS_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+        `;
+        if (!OWNED_STATUS_OPTIONS.some(o => o.value === prevValue)) {
+          filterSelect.value = 'all';
+        } else {
+          filterSelect.value = prevValue;
+        }
+      }
+    }
+
+    // ============================================================================
+    // ☁️ 跨設備雲端資料庫引擎 (Cloud Sync Engine + Local IndexedDB Cache)
+    // ============================================================================
+    const DB_NAME = 'MerchVaultMultiUserDB_v2';
+    const STORE_NAME = 'merch_multi_store';
+
+    function openMerchDB() {
+      return new Promise((resolve) => {
+        try {
+          if (!window.indexedDB) {
+            resolve(null);
+            return;
+          }
+          const req = window.indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME);
+            }
+          };
+          req.onsuccess = (e) => resolve(e.target.result);
+          req.onerror = () => resolve(null);
+        } catch (err) {
+          resolve(null);
+        }
+      });
+    }
+
+    function initCloudConfigFromUrlOrStorage() {
+      const params = new URLSearchParams(window.location.search);
+      const urlCloudId = params.get('cloud');
+      const urlFb = params.get('fb');
+
+      if (urlFb) {
+        customFirebaseUrl = urlFb.trim().replace(/\/+$/, '');
+        try { localStorage.setItem('merchvault_firebase_url', customFirebaseUrl); } catch (e) {}
+      } else if (FIXED_FIREBASE_URL) {
+        customFirebaseUrl = FIXED_FIREBASE_URL.trim().replace(/\/+$/, '');
+      } else {
+        try { customFirebaseUrl = localStorage.getItem('merchvault_firebase_url') || ''; } catch (e) {}
+      }
+
+      if (urlCloudId) {
+        cloudSyncId = urlCloudId.trim();
+        try { localStorage.setItem('merchvault_cloud_id', cloudSyncId); } catch (e) {}
+      } else if (FIXED_CLOUD_ID) {
+        cloudSyncId = FIXED_CLOUD_ID.trim();
+      } else {
+        try { cloudSyncId = localStorage.getItem('merchvault_cloud_id') || ''; } catch (e) {}
+      }
+
+      syncUrlQueryParams();
+    }
+
+    function syncUrlQueryParams() {
+      try {
+        const url = new URL(window.location.href);
+        if (customFirebaseUrl) {
+          url.searchParams.set('fb', customFirebaseUrl);
+        } else if (cloudSyncId) {
+          url.searchParams.set('cloud', cloudSyncId);
+        }
+        window.history.replaceState({}, '', url.toString());
+      } catch (e) {}
+      updateCloudStatusUI();
+    }
+
+    function getShareableCloudUrl() {
+      try {
+        const url = new URL(window.location.href);
+        if (customFirebaseUrl) {
+          url.searchParams.set('fb', customFirebaseUrl);
+        } else if (cloudSyncId) {
+          url.searchParams.set('cloud', cloudSyncId);
+        }
+        return url.toString();
+      } catch (e) {
+        return window.location.href;
+      }
+    }
+
+    function updateCloudStatusUI() {
+      const icon = document.getElementById('cloudStatusIcon');
+      const text = document.getElementById('cloudStatusText');
+      const badge = document.getElementById('cloudModalBadge');
+      const idLabel = document.getElementById('currentCloudIdLabel');
+      const urlInput = document.getElementById('shareableCloudUrlInput');
+
+      if (urlInput) urlInput.value = getShareableCloudUrl();
+      if (idLabel) {
+        idLabel.textContent = customFirebaseUrl
+          ? '自訂 Firebase 雲端庫'
+          : (cloudSyncId || '尚未建立');
+      }
+
+      if (isCloudConnected) {
+        icon.className = 'fa-solid fa-cloud-check text-emerald-600';
+        text.textContent = '雲端同步正常';
+        if (badge) {
+          badge.className = 'px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700';
+          badge.textContent = '雲端已連線';
+        }
+      } else {
+        icon.className = 'fa-solid fa-cloud text-sky-600';
+        text.textContent = '雲端資料庫設定';
+        if (badge) {
+          badge.className = 'px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700';
+          badge.textContent = '待連線 / 本地快取';
+        }
+      }
+    }
+
+    // Fetch whole multi-user database from Cloud
+    async function pullFromCloudDB() {
+      try {
+        if (customFirebaseUrl) {
+          const res = await fetch(`${customFirebaseUrl}/merchvault_db.json`);
+          if (res.ok) {
+            const data = await res.json();
+            isCloudConnected = true;
+            updateCloudStatusUI();
+            return data || null;
+          }
+        } else if (cloudSyncId) {
+          const res = await fetch(`https://jsonblob.com/api/jsonBlob/${cloudSyncId}`, {
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            isCloudConnected = true;
+            updateCloudStatusUI();
+            return data || null;
+          }
+        }
+      } catch (err) {
+        isCloudConnected = false;
+        updateCloudStatusUI();
+      }
+      return null;
+    }
+
+    // Push whole multi-user database to Cloud
+    async function pushToCloudDB() {
+      // Make sure current user's memory state is written into allUsersData
+      if (!allUsersData.userData) allUsersData.userData = {};
+      allUsersData.usersRegistry = usersRegistry;
+      allUsersData.userData[currentUser] = {
+        siteSettings,
+        merchItems
+      };
+
+      try {
+        if (customFirebaseUrl) {
+          const res = await fetch(`${customFirebaseUrl}/merchvault_db.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(allUsersData)
+          });
+          if (res.ok) {
+            isCloudConnected = true;
+            updateCloudStatusUI();
+            return true;
+          }
+        } else if (cloudSyncId) {
+          const res = await fetch(`https://jsonblob.com/api/jsonBlob/${cloudSyncId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(allUsersData)
+          });
+          if (res.ok) {
+            isCloudConnected = true;
+            updateCloudStatusUI();
+            return true;
+          }
+        } else {
+          // Automatically provision a new Cloud DB ID on first use
+          const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(allUsersData)
+          });
+          if (res.ok) {
+            const loc = res.headers.get('Location') || res.headers.get('location') || '';
+            const parts = loc.split('/');
+            const newId = parts[parts.length - 1];
+            if (newId) {
+              cloudSyncId = newId;
+              try { localStorage.setItem('merchvault_cloud_id', cloudSyncId); } catch (e) {}
+              isCloudConnected = true;
+              syncUrlQueryParams();
+              return true;
+            }
+          }
+        }
+      } catch (err) {
+        isCloudConnected = false;
+        updateCloudStatusUI();
+      }
+      return false;
+    }
+
+    // Ensure a cloud space is created on initial visit if none exists
+    async function ensureCloudSpaceInitialized() {
+      initCloudConfigFromUrlOrStorage();
+      const cloudData = await pullFromCloudDB();
+      if (cloudData && cloudData.usersRegistry) {
+        allUsersData = cloudData;
+        usersRegistry = cloudData.usersRegistry || {};
+        await saveLocalMasterCache();
+        return;
+      }
+      // If no existing cloud data, load local cache and push to create cloud DB
+      await loadLocalMasterCache();
+      await pushToCloudDB();
+    }
+
+    async function saveLocalMasterCache() {
+      try {
+        localStorage.setItem('merchvault_users_registry', JSON.stringify(usersRegistry));
+        localStorage.setItem('merchvault_current_user', currentUser);
+      } catch (e) {}
+
+      const db = await openMerchDB();
+      if (db) {
+        try {
+          await new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).put(allUsersData, 'master_cloud_cache');
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          });
+        } catch (e) {}
+      }
+    }
+
+    async function loadLocalMasterCache() {
+      const db = await openMerchDB();
+      if (db) {
+        try {
+          const cached = await new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).get('master_cloud_cache');
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+          });
+          if (cached && cached.usersRegistry) {
+            allUsersData = cached;
+            usersRegistry = cached.usersRegistry;
+          }
+        } catch (e) {}
+      }
+
+      if (!usersRegistry || Object.keys(usersRegistry).length === 0) {
+        usersRegistry = {
+          demo: { password: '1234', createdAt: 1761000000000 }
+        };
+        allUsersData = {
+          usersRegistry,
+          userData: {
+            demo: {
+              siteSettings: {
+                title: '星光周邊收藏館',
+                subtitle: '個人專屬周邊圖鑑・支援手機相簿上傳與願望清單管理',
+                adminPin: '1234',
+                showPricePublic: false
+              },
+              merchItems: []
+            }
+          }
+        };
+      }
+    }
+
+    async function saveStateToStorage() {
+      if (!allUsersData.userData) allUsersData.userData = {};
+      allUsersData.usersRegistry = usersRegistry;
+      allUsersData.userData[currentUser] = {
+        siteSettings,
+        merchItems
+      };
+      await saveLocalMasterCache();
+      await pushToCloudDB();
+    }
+
+    async function loadUserStateFromStorage(username) {
+      currentUser = username;
+      try { localStorage.setItem('merchvault_current_user', currentUser); } catch (e) {}
+
+      // Pull latest from Cloud DB first so cross-device logins see up-to-date items
+      const cloudData = await pullFromCloudDB();
+      if (cloudData && cloudData.usersRegistry) {
+        allUsersData = cloudData;
+        usersRegistry = cloudData.usersRegistry;
+      }
+
+      const userPayload = (allUsersData.userData && allUsersData.userData[username]) || null;
+
+      if (userPayload && userPayload.siteSettings) {
+        siteSettings = Object.assign({
+          title: `${username} 的周邊收藏館`,
+          subtitle: '個人專屬周邊圖鑑・支援手機相簿上傳與願望清單管理',
+          adminPin: usersRegistry[username]?.password || '1234',
+          showPricePublic: false
+        }, userPayload.siteSettings);
+      } else {
+        siteSettings = {
+          title: username === 'demo' ? '星光周邊收藏館' : `${username} 的周邊收藏館`,
+          subtitle: '個人專屬周邊圖鑑・支援手機相簿上傳與願望清單管理',
+          adminPin: usersRegistry[username]?.password || '1234',
+          showPricePublic: false
+        };
+      }
+
+      if (userPayload && Array.isArray(userPayload.merchItems)) {
+        merchItems = userPayload.merchItems.map(item => Object.assign({}, item, {
+          status: normalizeLegacyStatus(item.status)
+        }));
+      } else {
+        merchItems = [];
+      }
+
+      await saveLocalMasterCache();
+    }
+
+    // --- Cloud Modal Functions ---
+    function openCloudModal() {
+      updateCloudStatusUI();
+      document.getElementById('customCloudIdInput').value = cloudSyncId || '';
+      document.getElementById('customFirebaseUrlInput').value = customFirebaseUrl || '';
+      document.getElementById('cloudModal').classList.remove('hidden');
+    }
+
+    function closeCloudModal() {
+      document.getElementById('cloudModal').classList.add('hidden');
+    }
+
+    function copyShareableCloudUrl() {
+      const url = getShareableCloudUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('已複製「固定雲端網址」！在其他手機或電腦打開此網址即可登入同帳號');
+        }).catch(() => fallbackCopyText(url));
+      } else {
+        fallbackCopyText(url);
+      }
+    }
+
+    async function forceCloudSyncNow() {
+      showToast('正在與雲端資料庫同步中...', 'fa-solid fa-spinner fa-spin text-sky-400');
+      const cloudData = await pullFromCloudDB();
+      if (cloudData && cloudData.usersRegistry) {
+        allUsersData = cloudData;
+        usersRegistry = cloudData.usersRegistry;
+        await loadUserStateFromStorage(currentUser);
+        syncUIWithMode();
+        showToast('已從雲端同步最新周邊與帳號資料！');
+      } else {
+        const ok = await pushToCloudDB();
+        if (ok) {
+          showToast('已將本機資料上傳同步至雲端資料庫！');
+        } else {
+          showToast('雲端連線失敗，目前使用本機快取', 'fa-solid fa-triangle-exclamation text-amber-400');
+        }
+      }
+    }
+
+    async function applyCustomCloudId() {
+      const val = document.getElementById('customCloudIdInput').value.trim();
+      if (!val) return;
+      cloudSyncId = val;
+      customFirebaseUrl = '';
+      try {
+        localStorage.setItem('merchvault_cloud_id', cloudSyncId);
+        localStorage.removeItem('merchvault_firebase_url');
+      } catch (e) {}
+      syncUrlQueryParams();
+      await forceCloudSyncNow();
+      closeCloudModal();
+    }
+
+    async function applyCustomFirebaseUrl() {
+      const val = document.getElementById('customFirebaseUrlInput').value.trim().replace(/\/+$/, '');
+      if (!val) return;
+      customFirebaseUrl = val;
+      try { localStorage.setItem('merchvault_firebase_url', customFirebaseUrl); } catch (e) {}
+      syncUrlQueryParams();
+      await forceCloudSyncNow();
+      closeCloudModal();
+    }
+
+    // --- Multi-User Auth Modal Functions ---
+    function openAuthModal() {
+      document.getElementById('authErrorMsg').classList.add('hidden');
+      document.getElementById('authForm').reset();
+      setAuthModalMode('login');
+      document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function setAuthModalMode(mode) {
+      authModalMode = mode;
+      const loginBtn = document.getElementById('authTabLoginBtn');
+      const regBtn = document.getElementById('authTabRegisterBtn');
+      const extraFields = document.getElementById('authRegisterExtraFields');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      document.getElementById('authErrorMsg').classList.add('hidden');
+
+      if (mode === 'login') {
+        loginBtn.className = 'py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-2xs transition';
+        regBtn.className = 'py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+        extraFields.classList.add('hidden');
+        submitBtn.textContent = '登入並載入雲端個人數據';
+      } else {
+        regBtn.className = 'py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-2xs transition';
+        loginBtn.className = 'py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+        extraFields.classList.remove('hidden');
+        submitBtn.textContent = '建立獨立帳號與空白周邊庫';
+      }
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const username = document.getElementById('authUsernameInput').value.trim();
+      const password = document.getElementById('authPasswordInput').value.trim();
+      const customTitle = document.getElementById('authSiteTitleInput').value.trim();
+      const errEl = document.getElementById('authErrorMsg');
+
+      if (!username || !password) return;
+
+      // Always pull latest usersRegistry from Cloud DB before checking login/registration
+      const cloudData = await pullFromCloudDB();
+      if (cloudData && cloudData.usersRegistry) {
+        allUsersData = cloudData;
+        usersRegistry = cloudData.usersRegistry;
+      }
+
+      if (authModalMode === 'login') {
+        if (!usersRegistry[username]) {
+          errEl.textContent = '找不到此帳號，請先切換至「註冊新帳號」建立！';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        if (usersRegistry[username].password !== password) {
+          errEl.textContent = '密碼輸入錯誤，請重新確認！';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        await loadUserStateFromStorage(username);
+        isAdminMode = true;
+        closeAuthModal();
+        syncUIWithMode();
+        showToast(`歡迎回來，${username}！已載入您的雲端周邊與願望清單`, 'fa-solid fa-user-check text-emerald-400');
+      } else {
+        if (usersRegistry[username]) {
+          errEl.textContent = '此帳號名稱已被註冊，請直接登入或換一個名稱！';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        usersRegistry[username] = {
+          password,
+          createdAt: Date.now()
+        };
+
+        currentUser = username;
+        siteSettings = {
+          title: customTitle || `${username} 的周邊收藏館`,
+          subtitle: '個人專屬周邊圖鑑・支援手機相簿上傳與願望清單管理',
+          adminPin: password,
+          showPricePublic: false
+        };
+        // Start completely empty for newly registered accounts
+        merchItems = [];
+
+        await saveStateToStorage();
+        isAdminMode = true;
+        closeAuthModal();
+        syncUIWithMode();
+        showToast(`帳號「${username}」註冊成功！已同步至雲端資料庫`, 'fa-solid fa-wand-magic-sparkles text-brand-400');
+      }
+    }
+
+    // --- Toast Helper ---
+    let toastTimer = null;
+    function showToast(msg, iconClass = 'fa-solid fa-circle-check text-emerald-400') {
+      const box = document.getElementById('toastBox');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastMessage');
+      icon.className = iconClass + ' text-base';
+      text.textContent = msg;
+      box.classList.remove('hidden');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('hidden');
+      }, 2800);
+    }
+
+    // --- Mode Switching (Admin vs Public Read-Only Viewer) ---
+    function handleModeToggleClick() {
+      if (isAdminMode) {
+        isAdminMode = false;
+        if (currentTab === 'admin') {
+          currentTab = 'gallery';
+        }
+        syncUIWithMode();
+        showToast('已切換為「公開展示模式 (唯讀)」，編輯與上傳功能已鎖定', 'fa-solid fa-eye text-emerald-400');
+      } else {
+        const pinInput = document.getElementById('pinCheckInput');
+        pinInput.value = '';
+        document.getElementById('pinModalAccountName').textContent = currentUser;
+        document.getElementById('pinErrorMsg').classList.add('hidden');
+        document.getElementById('pinModal').classList.remove('hidden');
+        setTimeout(() => pinInput.focus(), 80);
+      }
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.add('hidden');
+    }
+
+    function handlePinSubmit(e) {
+      e.preventDefault();
+      const val = document.getElementById('pinCheckInput').value.trim();
+      const expectedPwd = usersRegistry[currentUser]?.password || siteSettings.adminPin;
+      if (val === expectedPwd || val === siteSettings.adminPin) {
+        isAdminMode = true;
+        closePinModal();
+        syncUIWithMode();
+        showToast('已解鎖並返回「後台管理模式」', 'fa-solid fa-unlock-keyhole text-brand-400');
+      } else {
+        document.getElementById('pinErrorMsg').classList.remove('hidden');
+      }
+    }
+
+    function syncUIWithMode() {
+      document.getElementById('siteTitleDisplay').textContent = siteSettings.title;
+      document.getElementById('siteSubtitleDisplay').textContent = siteSettings.subtitle;
+      document.getElementById('currentUserDisplay').textContent = currentUser;
+      document.getElementById('adminPanelCurrentAccount').textContent = currentUser;
+
+      document.getElementById('settingSiteTitle').value = siteSettings.title;
+      document.getElementById('settingSiteSubtitle').value = siteSettings.subtitle;
+      document.getElementById('settingAdminPin').value = usersRegistry[currentUser]?.password || siteSettings.adminPin;
+      document.getElementById('settingShowPricePublic').checked = !!siteSettings.showPricePublic;
+
+      const modeBadge = document.getElementById('modeBadge');
+      const toggleIcon = document.getElementById('toggleModeIcon');
+      const toggleText = document.getElementById('toggleModeText');
+      const publicBanner = document.getElementById('publicNoticeBanner');
+      const topUploadBtn = document.getElementById('topUploadBtn');
+      const adminTabBtn = document.getElementById('adminTabBtn');
+      const mobileCenterUploadBtn = document.getElementById('mobileCenterUploadBtn');
+      const mobileAdminTabBtn = document.getElementById('mobileAdminTabBtn');
+      const storageLocationSection = document.getElementById('storageLocationSection');
+      const emptyStateUploadBtn = document.getElementById('emptyStateUploadBtn');
+      const emptyStateWishBtn = document.getElementById('emptyStateWishBtn');
+      const addWishBtnTop = document.getElementById('addWishBtnTop');
+
+      if (isAdminMode) {
+        modeBadge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-brand-100 text-brand-700 shrink-0';
+        modeBadge.innerHTML = '<i class="fa-solid fa-sliders text-[10px]"></i> 後台管理中';
+        toggleIcon.className = 'fa-solid fa-eye text-emerald-600';
+        toggleText.textContent = '預覽公開視角';
+        publicBanner.classList.add('hidden');
+        topUploadBtn.classList.remove('hidden');
+        topUploadBtn.classList.add('sm:inline-flex');
+        adminTabBtn.classList.remove('hidden');
+        mobileCenterUploadBtn.classList.remove('hidden');
+        mobileAdminTabBtn.classList.remove('hidden');
+        storageLocationSection.classList.remove('hidden');
+        emptyStateUploadBtn.classList.remove('hidden');
+        emptyStateWishBtn.classList.remove('hidden');
+        if (addWishBtnTop) addWishBtnTop.classList.remove('hidden');
+      } else {
+        modeBadge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 shrink-0';
+        modeBadge.innerHTML = '<i class="fa-solid fa-globe text-[10px]"></i> 公開展示 (唯讀)';
+        toggleIcon.className = 'fa-solid fa-lock text-brand-600';
+        toggleText.textContent = '館主後台登入';
+        publicBanner.classList.remove('hidden');
+        topUploadBtn.classList.add('hidden');
+        topUploadBtn.classList.remove('sm:inline-flex');
+        adminTabBtn.classList.add('hidden');
+        mobileCenterUploadBtn.classList.add('hidden');
+        mobileAdminTabBtn.classList.add('hidden');
+        storageLocationSection.classList.add('hidden');
+        emptyStateUploadBtn.classList.add('hidden');
+        emptyStateWishBtn.classList.add('hidden');
+        if (addWishBtnTop) addWishBtnTop.classList.add('hidden');
+      }
+
+      updateCloudStatusUI();
+      switchTab(currentTab);
+      refreshAllViews();
+    }
+
+    // --- Tab & Layout Switching ---
+    function switchTab(tabName) {
+      if (!isAdminMode && tabName === 'admin') {
+        tabName = 'gallery';
+      }
+      currentTab = tabName;
+
+      const isGalleryOrWish = tabName === 'gallery' || tabName === 'wishlist';
+      document.getElementById('tabPanelGallery').classList.toggle('hidden', !isGalleryOrWish);
+      document.getElementById('wishlistHeaderBanner').classList.toggle('hidden', tabName !== 'wishlist');
+      document.getElementById('tabPanelTags').classList.toggle('hidden', tabName !== 'tags');
+      document.getElementById('tabPanelAdmin').classList.toggle('hidden', tabName !== 'admin');
+
+      updateFilterStatusDropdownForTab();
+
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        const t = btn.getAttribute('data-tab');
+        const isAct = t === tabName;
+        if (t === 'wishlist') {
+          btn.className = isAct
+            ? 'nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-rose-500 text-white shadow-sm transition flex items-center gap-1.5 shrink-0'
+            : 'nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition flex items-center gap-1.5 shrink-0';
+        } else {
+          btn.className = isAct
+            ? 'nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-brand-600 text-white shadow-sm transition flex items-center gap-1.5 shrink-0'
+            : 'nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0';
+        }
+      });
+
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        const t = btn.getAttribute('data-mob-tab');
+        const isAct = t === tabName;
+        btn.className = isAct
+          ? `mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl ${t === 'wishlist' ? 'text-rose-500' : 'text-brand-600'} font-semibold text-[11px]`
+          : 'mob-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-500 font-medium text-[11px]';
+      });
+
+      applyFilters();
+    }
+
+    function filterByOrganizedStatus() {
+      currentTab = 'gallery';
+      switchTab('gallery');
+      const statusSelect = document.getElementById('filterStatus');
+      statusSelect.value = statusSelect.value === 'organized' ? 'unorganized' : 'organized';
+      applyFilters();
+    }
+
+    function setLayoutView(layout) {
+      currentLayout = layout;
+      const gBtn = document.getElementById('viewGridBtn');
+      const pBtn = document.getElementById('viewPhotoBtn');
+      const lBtn = document.getElementById('viewListBtn');
+
+      const activeCls = 'px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-800 shadow-sm transition';
+      const inactiveCls = 'px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition';
+
+      gBtn.className = layout === 'grid' ? activeCls : inactiveCls;
+      pBtn.className = layout === 'photo' ? activeCls : inactiveCls;
+      lBtn.className = layout === 'list' ? activeCls : inactiveCls;
+
+      applyFilters();
+    }
+
+    // --- Status Badge Metadata ---
+    function getStatusInfo(status) {
+      const map = {
+        organized: { label: '✨ 現貨 (已整理位置)', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+        unorganized: { label: '📥 現貨 (未入庫)', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+        preorder: { label: '📦 預購等待中', cls: 'bg-sky-50 text-sky-700 border-sky-200' },
+        trade: { label: '🔄 可交換', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
+        forsale: { label: '🏷️ 待售', cls: 'bg-teal-50 text-teal-700 border-teal-200' },
+        wish_unreleased: { label: '🗓️ 未上市', cls: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+        wish_lottery: { label: '🎟️ 抽選中', cls: 'bg-orange-50 text-orange-700 border-orange-200' },
+        wish_watching: { label: '👀 觀望中', cls: 'bg-rose-50 text-rose-700 border-rose-200' }
+      };
+      return map[status] || map.organized;
+    }
+
+    function refreshAllViews() {
+      populateSeriesDropdown();
+      renderStatsBar();
+      renderQuickTagPills();
+      applyFilters();
+      renderTagClouds();
+    }
+
+    function populateSeriesDropdown() {
+      const select = document.getElementById('filterSeries');
+      const datalist = document.getElementById('existingSeriesDatalist');
+      const currentVal = select.value;
+
+      const seriesSet = new Set();
+      merchItems.forEach(item => {
+        if (item.series && item.series.trim()) seriesSet.add(item.series.trim());
+      });
+
+      select.innerHTML = '<option value="all">所有作品 / IP</option>';
+      datalist.innerHTML = '';
+      Array.from(seriesSet).sort().forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        select.appendChild(opt);
+
+        const dOpt = document.createElement('option');
+        dOpt.value = s;
+        datalist.appendChild(dOpt);
+      });
+
+      if (Array.from(seriesSet).includes(currentVal)) {
+        select.value = currentVal;
+      } else {
+        select.value = 'all';
+      }
+    }
+
+    function renderStatsBar() {
+      const ownedItems = merchItems.filter(i => !isWishlistStatus(i.status));
+      const wishItems = merchItems.filter(i => isWishlistStatus(i.status));
+
+      const organizedCount = ownedItems.filter(i => i.status === 'organized').length;
+      const unorganizedCount = ownedItems.filter(i => i.status === 'unorganized').length;
+      const totalOwnedValue = ownedItems.reduce((acc, i) => acc + ((Number(i.price) || 0) * (Number(i.qty) || 1)), 0);
+
+      document.getElementById('statTotalValue').textContent = `${ownedItems.length} 款`;
+      document.getElementById('statInStockSplitValue').textContent = `${organizedCount} / ${unorganizedCount} 款`;
+      document.getElementById('statWishValue').textContent = `${wishItems.length} 款`;
+
+      document.getElementById('tabCountBadge').textContent = String(ownedItems.length);
+      document.getElementById('tabWishCountBadge').textContent = String(wishItems.length);
+
+      if (!isAdminMode && !siteSettings.showPricePublic) {
+        const uniqueTags = new Set();
+        merchItems.forEach(i => (i.tags || []).forEach(t => uniqueTags.add(t)));
+        document.getElementById('statExtraLabel').textContent = '收錄標籤總數';
+        document.getElementById('statExtraValue').textContent = `${uniqueTags.size} 個 #Tag`;
+      } else {
+        document.getElementById('statExtraLabel').textContent = '已擁有預估總額';
+        document.getElementById('statExtraValue').textContent = `NT$ ${totalOwnedValue.toLocaleString()}`;
+      }
+    }
+
+    function renderQuickTagPills() {
+      const container = document.getElementById('quickTagPills');
+      const tagCounts = {};
+      merchItems.forEach(item => {
+        (item.tags || []).forEach(t => {
+          tagCounts[t] = (tagCounts[t] || 0) + 1;
+        });
+      });
+
+      const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
+      let html = `
+        <button type="button" onclick="selectQuickTag('')" class="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition ${activeQuickTag === '' ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+          全部標籤
+        </button>
+      `;
+      sortedTags.forEach(tag => {
+        const isAct = activeQuickTag === tag;
+        html += `
+          <button type="button" onclick="selectQuickTag('${escapeHtml(tag)}')" class="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition ${isAct ? 'bg-brand-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-brand-50 hover:text-brand-600'}">
+            #${escapeHtml(tag)} <span class="opacity-70 text-[10px]">(${tagCounts[tag]})</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectQuickTag(tag) {
+      activeQuickTag = activeQuickTag === tag ? '' : tag;
+      renderQuickTagPills();
+      applyFilters();
+    }
+
+    function clearSearchInput() {
+      document.getElementById('searchInput').value = '';
+      applyFilters();
+    }
+
+    function resetAllFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterCategory').value = 'all';
+      document.getElementById('filterSeries').value = 'all';
+      document.getElementById('filterStatus').value = 'all';
+      activeQuickTag = '';
+      renderQuickTagPills();
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      document.getElementById('clearSearchBtn').classList.toggle('hidden', q.length === 0);
+
+      const cat = document.getElementById('filterCategory').value;
+      const series = document.getElementById('filterSeries').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      let filtered = merchItems.filter(item => {
+        // Tab-level separation: 'wishlist' tab shows only wishlist items; 'gallery' shows owned items
+        if (currentTab === 'wishlist' && !isWishlistStatus(item.status)) return false;
+        if (currentTab === 'gallery' && isWishlistStatus(item.status)) return false;
+
+        if (cat !== 'all' && item.category !== cat) return false;
+        if (series !== 'all' && item.series !== series) return false;
+        if (statusFilter !== 'all' && item.status !== statusFilter) return false;
+
+        if (activeQuickTag && !(item.tags || []).includes(activeQuickTag)) return false;
+
+        if (q) {
+          const hay = [
+            item.name,
+            item.series,
+            item.character,
+            item.category,
+            isAdminMode ? item.location : '',
+            item.note,
+            ...(item.tags || [])
+          ].join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortOrder === 'qty_desc') return (Number(b.qty) || 1) - (Number(a.qty) || 1);
+        if (sortOrder === 'price_desc') return (Number(b.price) || 0) - (Number(a.price) || 0);
+        if (sortOrder === 'name_asc') return (a.name || '').localeCompare(b.name || '', 'zh-Hant');
+        return (b.createdAt || 0) - (a.createdAt || 0);
+      });
+
+      renderGalleryItems(filtered);
+    }
+
+    function renderGalleryItems(items) {
+      const container = document.getElementById('galleryContainer');
+      const emptyBox = document.getElementById('emptyStateBox');
+
+      if (items.length === 0) {
+        container.innerHTML = '';
+        emptyBox.classList.remove('hidden');
+        const isWish = currentTab === 'wishlist';
+        document.getElementById('emptyStateIcon').className = isWish ? 'fa-solid fa-heart text-rose-400' : 'fa-solid fa-box-open';
+        document.getElementById('emptyStateTitle').textContent = isWish ? '目前願望清單是空的' : '目前還沒有收錄任何周邊';
+        document.getElementById('emptyStateDesc').textContent = isWish
+          ? '有未上市、抽選中或觀望中的目標周邊嗎？點擊下方「新增願望目標」加入清單！'
+          : '點擊下方按鈕即可直接從手機相簿選取照片（或開啟相機拍照）上傳您的第一件周邊收藏！';
+        return;
+      }
+      emptyBox.classList.add('hidden');
+
+      const showPrice = isAdminMode || siteSettings.showPricePublic;
+
+      if (currentLayout === 'photo') {
+        container.className = 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3';
+        container.innerHTML = items.map(item => {
+          const st = getStatusInfo(item.status);
+          return `
+            <div onclick="openDetailModal('${item.id}')" class="group relative aspect-square rounded-2xl overflow-hidden bg-slate-200 border border-slate-200/80 cursor-pointer shadow-2xs">
+              <img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <div class="absolute top-2 left-2 flex gap-1">
+                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${st.cls}">${st.label}</span>
+              </div>
+              <div class="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold">
+                x${item.qty || 1}
+              </div>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2.5 text-white">
+                <p class="text-xs font-bold truncate">${escapeHtml(item.name)}</p>
+                <p class="text-[10px] text-slate-200 truncate">${escapeHtml(item.character || item.series || '')}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      if (currentLayout === 'list') {
+        container.className = 'space-y-2.5';
+        container.innerHTML = items.map(item => {
+          const st = getStatusInfo(item.status);
+          return `
+            <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-3 hover:border-brand-300 transition">
+              <div onclick="openDetailModal('${item.id}')" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer">
+                <img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-100" />
+                <div class="min-w-0 flex-1 space-y-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${st.cls}">${st.label}</span>
+                    <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold">${escapeHtml(item.category || '')}</span>
+                    <span class="text-xs text-brand-600 font-semibold truncate">${escapeHtml(item.series || '')}</span>
+                  </div>
+                  <h4 class="font-bold text-sm text-slate-900 truncate">${escapeHtml(item.name)}</h4>
+                  <div class="flex flex-wrap items-center gap-1 text-[11px] text-slate-500">
+                    <span>角色：${escapeHtml(item.character || '-')}</span>
+                    ${isAdminMode && item.location ? `<span class="text-amber-700">｜📍 ${escapeHtml(item.location)}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                ${isAdminMode && isWishlistStatus(item.status) ? `
+                  <button type="button" onclick="fulfillWishlistItem('${item.id}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition" title="已入手！移入已擁有圖鑑">
+                    <i class="fa-solid fa-check mr-1"></i>達成願望
+                  </button>
+                ` : ''}
+                ${isAdminMode ? `
+                  <div class="flex items-center bg-slate-100 rounded-xl p-1">
+                    <button type="button" onclick="adjustItemQty('${item.id}', -1)" class="w-6 h-6 rounded-lg hover:bg-white text-slate-700 text-xs font-bold">-</button>
+                    <span class="px-2 text-xs font-bold text-slate-800">${item.qty || 1}</span>
+                    <button type="button" onclick="adjustItemQty('${item.id}', 1)" class="w-6 h-6 rounded-lg hover:bg-white text-slate-700 text-xs font-bold">+</button>
+                  </div>
+                  <button type="button" onclick="openUploadModal('${item.id}')" class="p-2 rounded-xl bg-slate-100 hover:bg-brand-50 text-slate-600 hover:text-brand-600 text-xs" title="編輯">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                ` : `
+                  <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">x${item.qty || 1}</span>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      // Standard Card Grid View
+      container.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
+      container.innerHTML = items.map(item => {
+        const st = getStatusInfo(item.status);
+        const tagsHtml = (item.tags || []).slice(0, 3).map(t =>
+          `<span onclick="event.stopPropagation(); selectQuickTag('${escapeHtml(t)}')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-600 text-[11px] font-medium cursor-pointer transition">#${escapeHtml(t)}</span>`
+        ).join('');
+
+        return `
+          <article onclick="openDetailModal('${item.id}')" class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs card-hover flex flex-col cursor-pointer">
+            <!-- Thumbnail -->
+            <div class="relative aspect-square bg-slate-100 overflow-hidden">
+              <img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-full h-full object-cover" />
+              <!-- Top Right Qty -->
+              <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg bg-slate-900/75 backdrop-blur-xs text-white text-xs font-bold">
+                x${item.qty || 1}
+              </div>
+              <!-- Bottom Status Pill -->
+              <div class="absolute bottom-2 left-2.5">
+                <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold border shadow-2xs backdrop-blur-xs ${st.cls}">
+                  ${st.label}
+                </span>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-3 sm:p-3.5 flex-1 flex flex-col justify-between space-y-2.5">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between gap-1 text-[11px] font-semibold text-brand-600">
+                  <span class="truncate">${escapeHtml(item.series || '未分類作品')}</span>
+                  <span class="text-slate-400 shrink-0">${escapeHtml(item.category || '')}</span>
+                </div>
+                <h3 class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 leading-snug">${escapeHtml(item.name)}</h3>
+                <p class="text-xs text-slate-500 truncate"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${escapeHtml(item.character || '未標註角色')}</p>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <div class="flex flex-wrap gap-1">
+                  ${tagsHtml}
+                </div>
+
+                ${isAdminMode && item.location ? `
+                  <div class="text-[11px] text-amber-700 bg-amber-50/80 px-2 py-1 rounded-lg truncate">
+                    <i class="fa-solid fa-box-archive mr-1"></i>${escapeHtml(item.location)}
+                  </div>
+                ` : ''}
+
+                <!-- Card Footer -->
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+                  ${showPrice ? `<span class="text-xs font-bold text-slate-700">NT$ ${(Number(item.price) || 0).toLocaleString()}</span>` : `<span class="text-[11px] text-slate-400">點擊查看詳情</span>`}
+
+                  ${isAdminMode ? `
+                    <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                      ${isWishlistStatus(item.status) ? `
+                        <button type="button" onclick="fulfillWishlistItem('${item.id}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold transition" title="已入手！轉入已擁有周邊">
+                          <i class="fa-solid fa-check mr-0.5"></i>已入手
+                        </button>
+                      ` : `
+                        <button type="button" onclick="cycleInStockOrganized('${item.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 text-xs" title="切換：現貨(已整理位置) / 現貨(未入庫)">
+                          <i class="fa-solid ${item.status === 'organized' ? 'fa-box-check text-emerald-600' : 'fa-box-open text-amber-500'}"></i>
+                        </button>
+                      `}
+                      <button type="button" onclick="openUploadModal('${item.id}')" class="p-1.5 rounded-lg hover:bg-brand-50 text-slate-500 hover:text-brand-600 text-xs" title="編輯周邊">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // --- Tag & Category Clouds (Tab 3) ---
+    function renderTagClouds() {
+      const seriesMap = {};
+      const catMap = {};
+      const charMap = {};
+      const tagMap = {};
+      const locMap = {};
+
+      merchItems.forEach(item => {
+        if (item.series) seriesMap[item.series] = (seriesMap[item.series] || 0) + 1;
+        if (item.category) catMap[item.category] = (catMap[item.category] || 0) + 1;
+        if (item.character) charMap[item.character] = (charMap[item.character] || 0) + 1;
+        (item.tags || []).forEach(t => { tagMap[t] = (tagMap[t] || 0) + 1; });
+        if (isAdminMode && item.location) locMap[item.location] = (locMap[item.location] || 0) + 1;
+      });
+
+      const makeCloud = (mapObj, filterType, badgeCls) => {
+        const keys = Object.keys(mapObj);
+        if (keys.length === 0) return '<span class="text-xs text-slate-400">尚無資料</span>';
+        return keys.map(k => `
+          <button type="button" onclick="filterFromCloud('${filterType}', '${escapeHtml(k)}')" class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5 ${badgeCls}">
+            <span>${escapeHtml(k)}</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-white/80 text-[11px]">${mapObj[k]}</span>
+          </button>
+        `).join('');
+      };
+
+      document.getElementById('seriesCloudList').innerHTML = makeCloud(seriesMap, 'series', 'bg-brand-50 border-brand-200 text-brand-700 hover:bg-brand-100');
+      document.getElementById('categoryCloudList').innerHTML = makeCloud(catMap, 'category', 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100');
+      document.getElementById('characterCloudList').innerHTML = makeCloud(charMap, 'search', 'bg-pink-50 border-pink-200 text-pink-700 hover:bg-pink-100');
+      document.getElementById('allTagsCloudList').innerHTML = makeCloud(tagMap, 'tag', 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200');
+      document.getElementById('locationCloudList').innerHTML = makeCloud(locMap, 'search', 'bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100');
+    }
+
+    function filterFromCloud(type, value) {
+      resetAllFilters();
+      if (type === 'series') {
+        document.getElementById('filterSeries').value = value;
+      } else if (type === 'category') {
+        document.getElementById('filterCategory').value = value;
+      } else if (type === 'tag') {
+        activeQuickTag = value;
+        renderQuickTagPills();
+      } else {
+        document.getElementById('searchInput').value = value;
+      }
+      switchTab('gallery');
+      applyFilters();
+    }
+
+    // --- Mobile Photo Upload & Client-Side Smart Compression (Optimized for iOS / Android High-Res Photos) ---
+    function generatePlaceholderSvgDataUrl(titleText) {
+      const label = (titleText || '周邊收藏').slice(0, 8);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+        <defs>
+          <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ede9fe"/>
+            <stop offset="100%" stop-color="#fce7f3"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="600" fill="url(#g)"/>
+        <circle cx="300" cy="240" r="70" fill="#ddd6fe"/>
+        <text x="300" y="385" text-anchor="middle" font-family="sans-serif" font-size="36" font-weight="bold" fill="#6d28d9">${escapeHtml(label)}</text>
+      </svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }
+
+    function compressImageFile(file, maxSize = 680, quality = 0.75) {
+      return new Promise((resolve) => {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            if (w > h && w > maxSize) {
+              h = Math.round((h * maxSize) / w);
+              w = maxSize;
+            } else if (h >= w && h > maxSize) {
+              w = Math.round((w * maxSize) / h);
+              h = maxSize;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(objectUrl);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } catch (err) {
+            URL.revokeObjectURL(objectUrl);
+            resolve(generatePlaceholderSvgDataUrl(file.name));
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result || generatePlaceholderSvgDataUrl(file.name));
+          reader.onerror = () => resolve(generatePlaceholderSvgDataUrl(file.name));
+          reader.readAsDataURL(file);
+        };
+        img.src = objectUrl;
+      });
+    }
+
+    async function handlePhotoFilesSelected(event) {
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+
+      showToast(`正在最佳化處理 ${files.length} 張手機照片...`, 'fa-solid fa-spinner fa-spin text-brand-400');
+      const compressedList = [];
+      for (const f of files) {
+        const dataUrl = await compressImageFile(f, 680, 0.75);
+        compressedList.push({
+          dataUrl,
+          rawName: f.name.replace(/\.[^/.]+$/, '')
+        });
+      }
+      pendingUploadImages = compressedList;
+
+      const previewImg = document.getElementById('photoPreviewImg');
+      const placeholder = document.getElementById('photoPlaceholder');
+      const batchBadge = document.getElementById('batchPhotoBadge');
+      const batchCount = document.getElementById('batchPhotoCount');
+
+      previewImg.src = compressedList[0].dataUrl;
+      previewImg.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+
+      if (compressedList.length > 1) {
+        batchCount.textContent = String(compressedList.length);
+        batchBadge.classList.remove('hidden');
+      } else {
+        batchBadge.classList.add('hidden');
+      }
+
+      const nameInput = document.getElementById('itemNameInput');
+      if (!nameInput.value.trim() && compressedList[0].rawName) {
+        nameInput.value = compressedList[0].rawName;
+      }
+      // Reset file inputs so selecting the same photo again still triggers onchange on mobile
+      event.target.value = '';
+      showToast(`已載入 ${compressedList.length} 張照片！`, 'fa-solid fa-camera text-emerald-400');
+    }
+
+    function appendQuickTag(tag) {
+      const input = document.getElementById('itemTagsInput');
+      const current = input.value.split(/[,，\s#]+/).map(s => s.trim()).filter(Boolean);
+      if (!current.includes(tag)) {
+        current.push(tag);
+      }
+      input.value = current.join(', ');
+    }
+
+    function openUploadModal(editId = '', defaultGroup = '') {
+      if (!isAdminMode) {
+        showToast('公開展示模式為唯讀狀態，請先切換回後台管理', 'fa-solid fa-lock text-amber-400');
+        return;
+      }
+      const modal = document.getElementById('uploadModal');
+      const form = document.getElementById('merchForm');
+      form.reset();
+      pendingUploadImages = [];
+      document.getElementById('batchPhotoBadge').classList.add('hidden');
+
+      const previewImg = document.getElementById('photoPreviewImg');
+      const placeholder = document.getElementById('photoPlaceholder');
+
+      if (editId) {
+        const item = merchItems.find(i => i.id === editId);
+        if (!item) return;
+        const itemGroup = isWishlistStatus(item.status) ? 'wishlist' : 'owned';
+        setFormStatusGroup(itemGroup, item.status);
+
+        document.getElementById('modalFormTitle').textContent = '編輯周邊收藏與標籤';
+        document.getElementById('editItemId').value = item.id;
+        document.getElementById('itemNameInput').value = item.name || '';
+        document.getElementById('itemSeriesInput').value = item.series || '';
+        document.getElementById('itemCharacterInput').value = item.character || '';
+        document.getElementById('itemCategoryInput').value = ITEM_CATEGORIES.includes(item.category) ? item.category : '其他';
+        document.getElementById('itemTagsInput').value = (item.tags || []).join(', ');
+        document.getElementById('itemQtyInput').value = item.qty || 1;
+        document.getElementById('itemPriceInput').value = item.price || 0;
+        document.getElementById('itemLocationInput').value = item.location || '';
+        document.getElementById('itemNoteInput').value = item.note || '';
+
+        if (item.image) {
+          previewImg.src = item.image;
+          previewImg.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        }
+      } else {
+        const targetGroup = defaultGroup
+          ? (defaultGroup === 'wishlist' ? 'wishlist' : 'owned')
+          : (currentTab === 'wishlist' ? 'wishlist' : 'owned');
+
+        setFormStatusGroup(targetGroup);
+
+        document.getElementById('modalFormTitle').textContent = targetGroup === 'wishlist'
+          ? '新增願望清單目標周邊'
+          : '新增已擁有周邊（支援手機相簿/拍照）';
+        document.getElementById('editItemId').value = '';
+        previewImg.src = '';
+        previewImg.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+
+      closeDetailModal();
+      modal.classList.remove('hidden');
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.add('hidden');
+    }
+
+    async function handleMerchFormSubmit(event) {
+      event.preventDefault();
+      if (!isAdminMode) return;
+
+      const editId = document.getElementById('editItemId').value;
+      const baseName = document.getElementById('itemNameInput').value.trim() || '未命名周邊';
+      const series = document.getElementById('itemSeriesInput').value.trim() || '個人收藏';
+      const character = document.getElementById('itemCharacterInput').value.trim() || '未分類角色';
+      const category = document.getElementById('itemCategoryInput').value;
+      const status = document.getElementById('itemStatusInput').value;
+      const rawTags = document.getElementById('itemTagsInput').value;
+      const tags = Array.from(new Set(rawTags.split(/[,，\s#]+/).map(t => t.trim()).filter(Boolean)));
+      const qty = Math.max(1, parseInt(document.getElementById('itemQtyInput').value, 10) || 1);
+      const price = Math.max(0, parseInt(document.getElementById('itemPriceInput').value, 10) || 0);
+      const location = document.getElementById('itemLocationInput').value.trim();
+      const note = document.getElementById('itemNoteInput').value.trim();
+
+      if (editId) {
+        const idx = merchItems.findIndex(i => i.id === editId);
+        if (idx !== -1) {
+          merchItems[idx] = Object.assign({}, merchItems[idx], {
+            name: baseName,
+            series,
+            character,
+            category,
+            status,
+            tags,
+            qty,
+            price,
+            location,
+            note,
+            image: pendingUploadImages.length > 0 ? pendingUploadImages[0].dataUrl : merchItems[idx].image
+          });
+        }
+        await saveStateToStorage();
+        closeUploadModal();
+        refreshAllViews();
+        showToast('周邊資訊已更新並同步雲端！');
+        return;
+      }
+
+      const fallbackImg = generatePlaceholderSvgDataUrl(baseName);
+      if (pendingUploadImages.length > 1) {
+        pendingUploadImages.forEach((imgObj, index) => {
+          merchItems.unshift({
+            id: 'merch_' + Date.now() + '_' + index,
+            name: `${baseName} #${index + 1}`,
+            series,
+            character,
+            category,
+            status,
+            tags,
+            qty,
+            price,
+            location,
+            note,
+            image: imgObj.dataUrl,
+            createdAt: Date.now() + index
+          });
+        });
+        showToast(`已從手機相簿批次新增 ${pendingUploadImages.length} 件周邊並同步雲端！`);
+      } else {
+        merchItems.unshift({
+          id: 'merch_' + Date.now(),
+          name: baseName,
+          series,
+          character,
+          category,
+          status,
+          tags,
+          qty,
+          price,
+          location,
+          note,
+          image: pendingUploadImages.length === 1 ? pendingUploadImages[0].dataUrl : fallbackImg,
+          createdAt: Date.now()
+        });
+        showToast(isWishlistStatus(status) ? '已加入願望清單並同步雲端！' : '已新增至已擁有周邊並同步雲端！');
+      }
+
+      if (isWishlistStatus(status) && currentTab === 'gallery') {
+        currentTab = 'wishlist';
+      } else if (!isWishlistStatus(status) && currentTab === 'wishlist') {
+        currentTab = 'gallery';
+      }
+
+      await saveStateToStorage();
+      closeUploadModal();
+      syncUIWithMode();
+    }
+
+    // --- Item Detail Lightbox & Quick Status Actions ---
+    function openDetailModal(itemId) {
+      const item = merchItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('detailModalImg').src = item.image;
+      document.getElementById('detailSeriesText').textContent = item.series || '個人收藏';
+      document.getElementById('detailTitleText').textContent = item.name;
+      document.getElementById('detailCharacterText').textContent = item.character || '-';
+      document.getElementById('detailCategoryText').textContent = item.category || '-';
+      document.getElementById('detailQtyText').textContent = `${item.qty || 1} 件`;
+      document.getElementById('detailPriceText').textContent = `NT$ ${(Number(item.price) || 0).toLocaleString()}`;
+      document.getElementById('detailLocationText').textContent = item.location || '尚未填寫位置或管道';
+      document.getElementById('detailNoteText').textContent = item.note || '無額外備註';
+
+      const st = getStatusInfo(item.status);
+      const stBadge = document.getElementById('detailStatusBadge');
+      stBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold border ${st.cls}`;
+      stBadge.textContent = st.label;
+
+      const tagsHtml = (item.tags || []).map(t =>
+        `<span onclick="closeDetailModal(); selectQuickTag('${escapeHtml(t)}')" class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 text-xs font-semibold cursor-pointer hover:bg-brand-100">#${escapeHtml(t)}</span>`
+      ).join('');
+      document.getElementById('detailTagsList').innerHTML = tagsHtml || '<span class="text-xs text-slate-400">無標籤</span>';
+
+      const showPrice = isAdminMode || siteSettings.showPricePublic;
+      document.getElementById('detailPriceBox').classList.toggle('hidden', !showPrice);
+      document.getElementById('detailLocationBox').classList.toggle('hidden', !isAdminMode);
+      document.getElementById('detailAdminActions').classList.toggle('hidden', !isAdminMode);
+
+      if (isAdminMode) {
+        const quickBtn = document.getElementById('detailQuickStatusBtn');
+        if (isWishlistStatus(item.status)) {
+          quickBtn.innerHTML = '<i class="fa-solid fa-check text-rose-500 mr-1"></i>達成願望 (轉為已擁有現貨)';
+          quickBtn.onclick = () => {
+            fulfillWishlistItem(item.id);
+            closeDetailModal();
+          };
+        } else {
+          quickBtn.innerHTML = item.status === 'organized'
+            ? '<i class="fa-solid fa-box-open text-amber-600 mr-1"></i>改為「現貨 (未入庫)」'
+            : '<i class="fa-solid fa-box-check text-emerald-600 mr-1"></i>改為「現貨 (已整理位置)」';
+          quickBtn.onclick = () => {
+            cycleInStockOrganized(item.id);
+            openDetailModal(item.id);
+          };
+        }
+        document.getElementById('detailEditBtn').onclick = () => openUploadModal(item.id);
+        document.getElementById('detailDeleteBtn').onclick = () => deleteMerchItem(item.id);
+      }
+
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+    }
+
+    async function fulfillWishlistItem(itemId) {
+      if (!isAdminMode) return;
+      const item = merchItems.find(i => i.id === itemId);
+      if (!item) return;
+      item.status = 'unorganized';
+      await saveStateToStorage();
+      refreshAllViews();
+      showToast(`恭喜入手「${item.name}」！已從願望清單移入已擁有周邊 (未入庫)`, 'fa-solid fa-wand-magic-sparkles text-emerald-400');
+    }
+
+    async function cycleInStockOrganized(itemId) {
+      if (!isAdminMode) return;
+      const item = merchItems.find(i => i.id === itemId);
+      if (!item) return;
+      item.status = item.status === 'organized' ? 'unorganized' : 'organized';
+      await saveStateToStorage();
+      refreshAllViews();
+      showToast(item.status === 'organized' ? '已標記為「✨ 現貨 (已整理位置)」' : '已標記為「📥 現貨 (未入庫)」');
+    }
+
+    async function adjustItemQty(itemId, delta) {
+      if (!isAdminMode) return;
+      const item = merchItems.find(i => i.id === itemId);
+      if (!item) return;
+      item.qty = Math.max(1, (Number(item.qty) || 1) + delta);
+      await saveStateToStorage();
+      refreshAllViews();
+    }
+
+    async function deleteMerchItem(itemId) {
+      if (!isAdminMode) return;
+      merchItems = merchItems.filter(i => i.id !== itemId);
+      await saveStateToStorage();
+      closeDetailModal();
+      refreshAllViews();
+      showToast('已刪除該筆周邊紀錄並同步雲端', 'fa-solid fa-trash-can text-rose-400');
+    }
+
+    // --- Admin Settings & Account Operations ---
+    async function saveSiteSettings() {
+      if (!isAdminMode) return;
+      siteSettings.title = document.getElementById('settingSiteTitle').value.trim() || `${currentUser} 的周邊收藏館`;
+      siteSettings.subtitle = document.getElementById('settingSiteSubtitle').value.trim() || '個人專屬周邊圖鑑';
+      const newPin = document.getElementById('settingAdminPin').value.trim();
+      if (newPin) {
+        siteSettings.adminPin = newPin;
+        if (usersRegistry[currentUser]) {
+          usersRegistry[currentUser].password = newPin;
+        }
+      }
+      siteSettings.showPricePublic = document.getElementById('settingShowPricePublic').checked;
+      await saveStateToStorage();
+      syncUIWithMode();
+      showToast('館藏設定與帳號密碼已儲存並同步至雲端！');
+    }
+
+    async function clearCurrentAccountItems() {
+      if (!isAdminMode) return;
+      merchItems = [];
+      await saveStateToStorage();
+      refreshAllViews();
+      showToast('已清空目前帳號的所有周邊資料');
+    }
+
+    // --- Share & Read-Only Website Export ---
+    function openShareModal() {
+      document.getElementById('shareModal').classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.add('hidden');
+    }
+
+    function copyPublicSummaryText() {
+      const owned = merchItems.filter(i => !isWishlistStatus(i.status));
+      const wishes = merchItems.filter(i => isWishlistStatus(i.status));
+      const lines = [
+        `✨【${siteSettings.title}】周邊收藏與願望清單 ✨`,
+        siteSettings.subtitle,
+        `📦 已擁有周邊：${owned.length} 款`,
+        ''
+      ];
+      owned.forEach((item, idx) => {
+        const st = getStatusInfo(item.status).label;
+        const tags = (item.tags || []).map(t => `#${t}`).join(' ');
+        lines.push(`${idx + 1}. [${item.category}] ${item.name} (${item.series || ''} / ${item.character || '-'}) x${item.qty || 1} ｜${st} ${tags}`);
+      });
+
+      if (wishes.length > 0) {
+        lines.push('');
+        lines.push(`💖 願望清單目標：${wishes.length} 款`);
+        wishes.forEach((item, idx) => {
+          const st = getStatusInfo(item.status).label;
+          const tags = (item.tags || []).map(t => `#${t}`).join(' ');
+          lines.push(`★ ${idx + 1}. [${item.category}] ${item.name} (${item.series || ''} / ${item.character || '-'}) ｜${st} ${tags}`);
+        });
+      }
+
+      const text = lines.join('\n');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('已複製周邊與願望清單文字！可直接貼上分享');
+        }).catch(() => fallbackCopyText(text));
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('已複製內容至剪貼簿！');
+      } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    function exportBackupJson() {
+      const payload = {
+        account: currentUser,
+        exportedAt: new Date().toISOString(),
+        siteSettings,
+        merchItems
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `merch_vault_${currentUser}_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('已匯出帳號周邊備份檔 (.json)');
+    }
+
+    function handleImportJson(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data.merchItems)) {
+            merchItems = data.merchItems.map(item => Object.assign({}, item, {
+              status: normalizeLegacyStatus(item.status)
+            }));
+            if (data.siteSettings) {
+              siteSettings = Object.assign({}, siteSettings, data.siteSettings);
+            }
+            await saveStateToStorage();
+            syncUIWithMode();
+            showToast(`成功匯入 ${merchItems.length} 筆周邊資料並同步至雲端！`);
+          }
+        } catch (err) {
+          showToast('備份檔格式不正確', 'fa-solid fa-triangle-exclamation text-rose-400');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportReadOnlyHtml() {
+      const ownedList = merchItems.filter(i => !isWishlistStatus(i.status));
+      const wishList = merchItems.filter(i => isWishlistStatus(i.status));
+
+      const renderCard = (item) => {
+        const st = getStatusInfo(item.status);
+        return `
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs flex flex-col">
+          <div class="aspect-square bg-slate-100 relative">
+            <img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-full h-full object-cover" />
+            <span class="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/70 text-white text-xs font-bold">x${item.qty || 1}</span>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${st.cls}">${st.label}</span>
+          </div>
+          <div class="p-3.5 space-y-1.5 flex-1 flex flex-col justify-between">
+            <div>
+              <p class="text-xs font-bold text-purple-600">${escapeHtml(item.series || '')}・${escapeHtml(item.category || '')}</p>
+              <h3 class="font-bold text-sm text-slate-900 mt-0.5">${escapeHtml(item.name)}</h3>
+              <p class="text-xs text-slate-500">角色：${escapeHtml(item.character || '-')}</p>
+            </div>
+            <div class="flex flex-wrap gap-1 pt-2">
+              ${(item.tags || []).map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px]">#${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>
+        </div>`;
+      };
+
+      const roHtml = `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${escapeHtml(siteSettings.title)}｜公開周邊與願望清單展示館 (唯讀)</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"><\/script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen p-4 sm:p-8 font-sans">
+  <div class="max-w-6xl mx-auto space-y-8">
+    <header class="bg-white rounded-3xl p-6 shadow-xs border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">🌐 公開展示館 (唯讀模式・不可編輯上傳)</span>
+        <h1 class="text-2xl font-bold mt-2">${escapeHtml(siteSettings.title)}</h1>
+        <p class="text-sm text-slate-500 mt-0.5">${escapeHtml(siteSettings.subtitle)}</p>
+      </div>
+      <div class="flex gap-6 text-right">
+        <div>
+          <p class="text-xs text-slate-400">已擁有周邊</p>
+          <p class="text-2xl font-bold text-purple-600">${ownedList.length} 款</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400">願望清單</p>
+          <p class="text-2xl font-bold text-rose-500">${wishList.length} 款</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-slate-800">📦 已擁有周邊 (${ownedList.length} 款)</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        ${ownedList.map(renderCard).join('')}
+      </div>
+    </section>
+
+    ${wishList.length > 0 ? `
+    <section class="space-y-3 pt-4 border-t border-slate-200">
+      <h2 class="text-lg font-bold text-rose-600">💖 願望清單目標 (${wishList.length} 款)</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        ${wishList.map(renderCard).join('')}
+      </div>
+    </section>` : ''}
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([roHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${siteSettings.title}_公開展示版.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeShareModal();
+      showToast('已下載「純唯讀公開展示網頁 (.html)」！');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // --- Initialize App ---
+    window.addEventListener('DOMContentLoaded', async () => {
+      setFormStatusGroup('owned');
+      updateFilterStatusDropdownForTab();
+      await ensureCloudSpaceInitialized();
+
+      let savedUser = 'demo';
+      try {
+        savedUser = localStorage.getItem('merchvault_current_user') || 'demo';
+      } catch (e) {}
+      if (!usersRegistry[savedUser]) {
+        savedUser = Object.keys(usersRegistry)[0] || 'demo';
+      }
+
+      await loadUserStateFromStorage(savedUser);
+      syncUIWithMode();
+    });
+  </script>
+</body>
+</html>
